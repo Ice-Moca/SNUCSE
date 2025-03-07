@@ -2,7 +2,7 @@ import sys
 
 def process_main(fasta_files, kmer_size, alpha_value):
     """
-    메인 함수: 입력된 FASTA 파일에서 LCS(Longest Common Subsequence)와 위치를 계산하고 결과를 저장합니다.
+    FASTA 파일에서 LCS(Longest Common Subsequence)와 위치를 계산하고 결과를 저장
     
     Parameters:
         fasta_files (list): 비교할 두 FASTA 파일 경로 리스트
@@ -24,7 +24,7 @@ def process_main(fasta_files, kmer_size, alpha_value):
 
 def create_lcs_file(fasta_files, kmer_size, lcs):
     """
-    LCS 결과를 파일로 저장합니다.
+    LCS 결과를 파일로 저장
     
     Parameters:
         fasta_files (list): 비교한 두 FASTA 파일 이름
@@ -39,7 +39,7 @@ def create_lcs_file(fasta_files, kmer_size, lcs):
 
 def create_positions_file(fasta_file, kmer_size, lcs_positions):
     """
-    LCS의 위치 정보를 파일로 저장합니다.
+    LCS의 위치 정보를 파일로 저장
     
     Parameters:
         fasta_file (str): FASTA 파일 이름
@@ -54,7 +54,7 @@ def create_positions_file(fasta_file, kmer_size, lcs_positions):
 
 def find_lcs(locations):
     """
-    두 k-mer 집합에서 LCS를 계산합니다.
+    두 k-mer 집합에서 LCS를 계산
     
     Parameters:
         locations (list): 각 파일의 k-mer와 위치 정보 리스트
@@ -97,7 +97,7 @@ def find_lcs(locations):
 
 def find_kmers(fasta_files, kmer_sets, kmer_size):
     """
-    주어진 FASTA 파일에서 필터링된 k-mer를 찾습니다.
+    주어진 FASTA 파일에서 필터링된 k-mer를 찾rl
     
     Parameters:
         fasta_files (list): 비교할 두 FASTA 파일 경로 리스트
@@ -111,7 +111,7 @@ def find_kmers(fasta_files, kmer_sets, kmer_size):
 
 def find_each_kmer(fasta_file, kmer_set, kmer_size):
     """
-    하나의 FASTA 파일에서 주어진 k-mer를 검색하고 위치를 기록합니다.
+    FASTA 파일에서 주어진 k-mer를 검색하고 위치를 기록
     
     Parameters:
         fasta_file (str): FASTA 파일 경로
@@ -141,7 +141,7 @@ def find_each_kmer(fasta_file, kmer_set, kmer_size):
 
 def filter_kmers(fasta_files, kmer_size, alpha_value):
     """
-    k-mer를 빈도수 및 중복 기준으로 필터링합니다.
+    k-mer를 빈도수 및 중복 기준으로 필터링
     
     Parameters:
         fasta_files (list): FASTA 파일 경로 리스트
@@ -156,7 +156,7 @@ def filter_kmers(fasta_files, kmer_size, alpha_value):
 
 def filter_each_kmer(genome_name, kmer_size, alpha_value):
     """
-    하나의 유전체 파일에서 k-mer를 필터링합니다.
+    하나의 유전체 파일에서 k-mer를 필터링
     
     Parameters:
         genome_name (str): 유전체 파일 이름(확장자 제외)
@@ -182,7 +182,7 @@ def filter_each_kmer(genome_name, kmer_size, alpha_value):
 
 def is_overlapping(kmer1, kmer2, kmer_size):
     """
-    두 k-mer가 기준 이상의 중첩을 가지는지 확인합니다.
+    두 k-mer가 기준 이상의 중첩을 가지는지 확인
     
     Parameters:
         kmer1 (str): 첫 번째 k-mer
