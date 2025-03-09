@@ -40,4 +40,5 @@ public class LinkedStack<E> implements StackInterface<E>{
     public void popAll(){
         topNode = null;
     }
+
 }
