@@ -117,4 +117,5 @@ public class LinkedList<E> implements ListInterface<E> {
         numItems=0;
         head=new Node<>(null,null);
     }
+
 }
