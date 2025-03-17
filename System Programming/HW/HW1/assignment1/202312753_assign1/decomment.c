@@ -23,6 +23,13 @@ int main(void)
   line_com = -1;
 
   // This while loop reads all characters from standard input one by one
+
+  //state
+  enum state {ON, OFF};
+  enum state checkComment = OFF; // 주석 내부인지 아닌지 확인
+  enum state checkString = OFF; // 문자열 내부인지 아닌지 확인
+  enum state checkChar = OFF; // 문자 내부인지 아닌지 확인
+
   while (1) {
     int got_eof = 0;
 
@@ -38,14 +45,10 @@ int main(void)
       got_eof = 1;
     }
 
-    enum state {ON, OFF};
-    enum state checkComment = OFF;
-    enum state checkString = OFF;
-    enum state checkChar = OFF;
-    
     // 코드의 시작부분에 있는 String부분 확인
     if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
-      if(checkString == ON){
+      putchar(ch);
+      if(checkString == ON){//문자열이 끝나는 부분
         checkString = OFF;
       }
       else if(checkString == OFF){
@@ -53,7 +56,8 @@ int main(void)
       }
     }
     // 코드의 시작부분에 있는 Char부분 확인
-    if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
+    else if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
+      putchar(ch);
       if(checkChar == ON){
         checkChar = OFF;
       }
@@ -62,7 +66,7 @@ int main(void)
       }
     }
     // 코드의 시작부분에 있는 주석부분 확인
-    if(ch=='/'&&checkString==OFF&&checkChar==OFF){
+    else if(ch=='/'&&checkString==OFF&&checkChar==OFF){
       ich= getchar();
       ch = (char)ich;
       if(ch=='/'){ // 주석이 시작되는 부분
@@ -84,25 +88,25 @@ int main(void)
         line_com = line_cur; // 주석이 시작되는 줄
         putchar(' ');
         checkComment=ON;
-        while(1){
+        while(checkComment==ON){
           ich = getchar();
           ch = (char)ich;
           if(ch=='\n'){ // enter 출력 다만 주석은 계속된다.
             putchar('\n');
             line_cur++;
           } 
-          if(ch=='*'){  // 주석이 끝나는지 확인인
+          if(ch=='*'){  // 주석이 끝나는지 확인
             ich = getchar();
-            ch = (char)ich;
-            if(ch=='/'){// 주석이 끝나는 부분
+            if(ich=='/'){// 주석이 끝나는 부분
               checkComment=OFF;
-              break;
+            }
+            else{
+              ungetc(ich,stdin);
             }
           }
           if(ch==EOF){ // 주석이 끝나지 않고 파일이 끝나는 경우
             got_eof = 1;
-            putchar('\n');
-            fprintf(stderr, "Error: line %d: unterminated comment\n", line_com);
+            fprintf(stderr, "Error: line %d: unterminated comment\n", line_com);//에러파일에 출력
             break;
           }
         }
@@ -118,7 +122,6 @@ int main(void)
         line_cur++;
       }
       if (got_eof){
-        putchar('\n');
         break;
       }
       putchar(ch);

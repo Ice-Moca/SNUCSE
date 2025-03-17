@@ -15,4 +15,27 @@ Though it was suggested on the ppt, I think it would be better if the assignment
 
 (Optional Quesetion3 Answer) Any information that will help us to grade your work in the most favorable light. 
 In particular you should describe all known bugs.
-Actually I had only 1 bugs for the given test codes. It was when we get the EOF as ch, we need to add the enter(which is '\n') to the output.
+Actually I had 2 bugs for the given test codes. It was when we get the EOF as ch, we need to add the enter(which is '\n') to the output.
+And the other one was when we get the ***/ as an input of ch, to check the end of Comment I used 
+
+if(ch=='*'){  // 주석이 끝나는지 확인
+    ich = getchar();
+    if(ich=='/'){// 주석이 끝나는 부분
+      checkComment=OFF;
+    }
+}
+
+then when there was odd number of * infront of /, the error happened. SO I changed the code to
+
+if(ch=='*'){  // 주석이 끝나는지 확인
+    ich = getchar();
+    if(ich=='/'){// 주석이 끝나는 부분
+      checkComment=OFF;
+    }
+    else{// **/와 같이 입력이 될때 *바로 뒤에 값이 *이면 주어진 *의 개개수일때 검증이 되지 않않는다.
+      //따라서 뒤의 문자가 /가 아니면 다시 원래 상태로 돌아가기 위해 문자를 앞에 삽입해둔다.
+      ungetc(ich,stdin);
+    }
+  }
+  
+then It finally worked well.
