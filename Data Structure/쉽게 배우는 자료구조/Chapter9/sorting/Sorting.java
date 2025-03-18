@@ -182,12 +182,14 @@ public class Sorting {
     }
 
     //Counting Sort
-    public int[] countingSort(int k){
+    public int[] countingSort(int k){//k는 주어진 배열의 max값
         int[] cnt = new int[k];
-        for(int i=0; i<k; i++){cnt[i]=0;}
-        for(int i=0; i<A.length; i++){cnt[A[i]]=0;}
-        cnt[0]--;
+        for(int i=0; i<k; i++){cnt[i]=0;} 
+        //cnt 배열을 생성한다.
+        for(int i=0; i<A.length; i++){cnt[A[i]]++;}
+        //cnt 배열에 각 원소의 개수를 저장한다.
         for(int i=1; i<k; i++){cnt[i]+=cnt[i-1];}
+        //cnt : number of elements less than or equal to i
         int[] B = new int[A.length];
         for(int j=A.length-1;j>=0;j--){
             B[cnt[A[j]]]=A[j];
