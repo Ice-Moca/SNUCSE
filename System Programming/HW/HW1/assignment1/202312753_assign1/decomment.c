@@ -47,7 +47,6 @@ int main(void)
 
     // 코드의 시작부분에 있는 String부분 확인
     if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
-      putchar(ch);
       if(checkString == ON){//문자열이 끝나는 부분
         checkString = OFF;
       }
@@ -56,8 +55,7 @@ int main(void)
       }
     }
     // 코드의 시작부분에 있는 Char부분 확인
-    else if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
-      putchar(ch);
+    if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
       if(checkChar == ON){
         checkChar = OFF;
       }
@@ -66,7 +64,7 @@ int main(void)
       }
     }
     // 코드의 시작부분에 있는 주석부분 확인
-    else if(ch=='/'&&checkString==OFF&&checkChar==OFF){
+    if(ch=='/'&&checkString==OFF&&checkChar==OFF){
       ich= getchar();
       ch = (char)ich;
       if(ch=='/'){ // 주석이 시작되는 부분
