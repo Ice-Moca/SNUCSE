@@ -76,11 +76,13 @@ def apply_bilateral_filter(image, diameter=9, sigma_color=75, sigma_space=75):
             filtered_image[i, j] = bilateral_filter_pixel(i, j, diameter, sigma_color, sigma_space, image)
 
     return filtered_image.astype(np.uint8)
+
 def apply_sobel_edge_detection(image, dx=1, dy=0, ksize=3):
     """
     Sobel Edge Detection:
     - 사용 목적: 이미지의 경계선을 검출.
     - 특징: x축 또는 y축 방향의 경계선을 강조.
+    - x축 기준으로 경계선 강조 방식의 코드.
     """
     if ksize == 3:
         if dx == 1 and dy == 0:
