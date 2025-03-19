@@ -803,30 +803,34 @@ int main(void)
     }
 
 
+
+
+
     if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
       putchar(ch);
-      if(checkString == ON){
-        checkString = OFF;
-      }
-      else if(checkString == OFF){
-        checkString = ON;
-      }
+      checkString = (checkString == ON) ? OFF : ON;
+      break;
     }
 
-    else if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
+
+
+
+
+    if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
       putchar(ch);
-      if(checkChar == ON){
-        checkChar = OFF;
-      }
-      else if(checkChar == OFF){
-        checkChar = ON;
-      }
+      checkChar = (checkChar == ON) ? OFF : ON;
+      break;
     }
 
-    else if(ch=='/'&&checkString==OFF&&checkChar==OFF){
+
+    if(ch=='/'&&checkString==OFF&&checkChar==OFF){
       ich= getchar();
       ch = (char)ich;
+
+
+
       if(ch=='/'){
+# 89 "./src/decomment.c"
         line_com = line_cur;
         checkComment=ON;
         putchar(' ');
@@ -842,6 +846,7 @@ int main(void)
         }
       }
       else if(ch=='*'){
+# 117 "./src/decomment.c"
         line_com = line_cur;
         putchar(' ');
         checkComment=ON;
@@ -849,33 +854,43 @@ int main(void)
           ich = getchar();
           ch = (char)ich;
           if(ch=='\n'){
+
             putchar('\n');
             line_cur++;
           }
           if(ch=='*'){
+
+
             ich = getchar();
             if(ich=='/'){
               checkComment=OFF;
             }
             else{
               ungetc(ich,
-# 104 "./src/decomment.c" 3 4
+# 136 "./src/decomment.c" 3 4
                         stdin
-# 104 "./src/decomment.c"
+# 136 "./src/decomment.c"
                              );
             }
           }
           if(ch==
-# 107 "./src/decomment.c" 3 4
+# 139 "./src/decomment.c" 3 4
                 (-1)
-# 107 "./src/decomment.c"
+# 139 "./src/decomment.c"
                    ){
+
+
             got_eof = 1;
             fprintf(
-# 109 "./src/decomment.c" 3 4
+# 143 "./src/decomment.c" 3 4
                    stderr
-# 109 "./src/decomment.c"
+# 143 "./src/decomment.c"
                          , "Error: line %d: unterminated comment\n", line_com);
+            return (
+# 144 "./src/decomment.c" 3 4
+                   1
+# 144 "./src/decomment.c"
+                               );
             break;
           }
         }
@@ -887,6 +902,7 @@ int main(void)
     }
     else{
 
+
       if (ch == '\n'){
         line_cur++;
       }
@@ -897,8 +913,8 @@ int main(void)
     }
   }
   return(
-# 130 "./src/decomment.c" 3 4
+# 166 "./src/decomment.c" 3 4
         0
-# 130 "./src/decomment.c"
+# 166 "./src/decomment.c"
                     );
 }
