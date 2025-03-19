@@ -123,11 +123,12 @@ int main(void)
         break;
       
       case CheckEscapeSequenceChar:
-        if(ch=='\''||ch=='"'){
-          putchar(ch);
-          DFAstate = CheckChar;
+      // Char 안에 EscapeSequence가 오는지 확인하는 부분
+        if(ch=='\n'){
+          line_cur++;
+          DFAstate = CheckString;
         }
-        else if(ch=='\\'){
+        if(ch=='\\'){
           putchar(ch);
         }
         else if(ch==EOF){
@@ -141,11 +142,12 @@ int main(void)
         break;
 
       case CheckEscapeSequenceString:
-        if(ch=='\''||ch=='"'){
-          putchar(ch);
+      // String 안에 EscapeSequence가 오는지 확인하는 부분
+        if(ch=='\n'){
+          line_cur++;
           DFAstate = CheckString;
         }
-        else if(ch=='\\'){
+        if(ch=='\\'){
           putchar(ch);
         }
         else if(ch==EOF){

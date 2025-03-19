@@ -1,9 +1,9 @@
-# 0 "./src/decomment.c"
+# 0 "decomment.c"
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "/usr/include/stdc-predef.h" 1 3 4
 # 0 "<command-line>" 2
-# 1 "./src/decomment.c"
+# 1 "decomment.c"
 # 1 "/usr/include/stdio.h" 1 3 4
 # 27 "/usr/include/stdio.h" 3 4
 # 1 "/usr/include/x86_64-linux-gnu/bits/libc-header-start.h" 1 3 4
@@ -540,7 +540,7 @@ extern int __uflow (FILE *);
 extern int __overflow (FILE *, int);
 # 902 "/usr/include/stdio.h" 3 4
 
-# 2 "./src/decomment.c" 2
+# 2 "decomment.c" 2
 # 1 "/usr/include/assert.h" 1 3 4
 # 66 "/usr/include/assert.h" 3 4
 
@@ -563,7 +563,7 @@ extern void __assert (const char *__assertion, const char *__file, int __line)
 
 
 
-# 3 "./src/decomment.c" 2
+# 3 "decomment.c" 2
 # 1 "/usr/include/stdlib.h" 1 3 4
 # 26 "/usr/include/stdlib.h" 3 4
 # 1 "/usr/include/x86_64-linux-gnu/bits/libc-header-start.h" 1 3 4
@@ -755,10 +755,10 @@ extern size_t wcstombs (char *__restrict __s,
 # 1024 "/usr/include/stdlib.h" 2 3 4
 # 1035 "/usr/include/stdlib.h" 3 4
 
-# 4 "./src/decomment.c" 2
-# 13 "./src/decomment.c"
+# 4 "decomment.c" 2
+# 13 "decomment.c"
 
-# 13 "./src/decomment.c"
+# 13 "decomment.c"
 int main(void)
 {
 
@@ -784,7 +784,7 @@ int main(void)
     ch = (char)ich;
 
     switch(DFAstate){
-# 46 "./src/decomment.c"
+# 46 "decomment.c"
       case START:
         if(ch == '\n'){
           putchar(ch);
@@ -802,14 +802,14 @@ int main(void)
           DFAstate = CheckChar;
         }
         else if(ch == 
-# 62 "./src/decomment.c" 3 4
+# 62 "decomment.c" 3 4
                      (-1)
-# 62 "./src/decomment.c"
+# 62 "decomment.c"
                         ){
           return(
-# 63 "./src/decomment.c" 3 4
+# 63 "decomment.c" 3 4
                 0
-# 63 "./src/decomment.c"
+# 63 "decomment.c"
                             );
           break;
         }
@@ -837,14 +837,14 @@ int main(void)
           DFAstate = START;
         }
         else if(ch == 
-# 89 "./src/decomment.c" 3 4
+# 89 "decomment.c" 3 4
                      (-1)
-# 89 "./src/decomment.c"
+# 89 "decomment.c"
                         ){
           return(
-# 90 "./src/decomment.c" 3 4
+# 90 "decomment.c" 3 4
                 0
-# 90 "./src/decomment.c"
+# 90 "decomment.c"
                             );
           break;
         }
@@ -872,14 +872,14 @@ int main(void)
           DFAstate = START;
         }
         else if(ch == 
-# 116 "./src/decomment.c" 3 4
+# 116 "decomment.c" 3 4
                      (-1)
-# 116 "./src/decomment.c"
+# 116 "decomment.c"
                         ){
           return(
-# 117 "./src/decomment.c" 3 4
+# 117 "decomment.c" 3 4
                 0
-# 117 "./src/decomment.c"
+# 117 "decomment.c"
                             );
           break;
         }
@@ -889,22 +889,23 @@ int main(void)
         break;
 
       case CheckEscapeSequenceChar:
-        if(ch=='\''||ch=='"'){
-          putchar(ch);
-          DFAstate = CheckChar;
+
+        if(ch=='\n'){
+          line_cur++;
+          DFAstate = CheckString;
         }
-        else if(ch=='\\'){
+        if(ch=='\\'){
           putchar(ch);
         }
         else if(ch==
-# 133 "./src/decomment.c" 3 4
+# 134 "decomment.c" 3 4
                    (-1)
-# 133 "./src/decomment.c"
+# 134 "decomment.c"
                       ){
           return(
-# 134 "./src/decomment.c" 3 4
+# 135 "decomment.c" 3 4
                 0
-# 134 "./src/decomment.c"
+# 135 "decomment.c"
                             );
           break;
         }
@@ -915,22 +916,23 @@ int main(void)
         break;
 
       case CheckEscapeSequenceString:
-        if(ch=='\''||ch=='"'){
-          putchar(ch);
+
+        if(ch=='\n'){
+          line_cur++;
           DFAstate = CheckString;
         }
-        else if(ch=='\\'){
+        if(ch=='\\'){
           putchar(ch);
         }
         else if(ch==
-# 151 "./src/decomment.c" 3 4
+# 153 "decomment.c" 3 4
                    (-1)
-# 151 "./src/decomment.c"
+# 153 "decomment.c"
                       ){
           return(
-# 152 "./src/decomment.c" 3 4
+# 154 "decomment.c" 3 4
                 0
-# 152 "./src/decomment.c"
+# 154 "decomment.c"
                             );
           break;
         }
@@ -958,15 +960,15 @@ int main(void)
           DFAstate = START;
         }
         else if( ch == 
-# 178 "./src/decomment.c" 3 4
+# 180 "decomment.c" 3 4
                       (-1)
-# 178 "./src/decomment.c"
+# 180 "decomment.c"
                          ){
           putchar('/');
           return(
-# 180 "./src/decomment.c" 3 4
+# 182 "decomment.c" 3 4
                 0
-# 180 "./src/decomment.c"
+# 182 "decomment.c"
                             );
           break;
         }
@@ -988,14 +990,14 @@ int main(void)
           DFAstate = START;
         }
         else if(ch == 
-# 200 "./src/decomment.c" 3 4
+# 202 "decomment.c" 3 4
                      (-1)
-# 200 "./src/decomment.c"
+# 202 "decomment.c"
                         ){
           return(
-# 201 "./src/decomment.c" 3 4
+# 203 "decomment.c" 3 4
                 0
-# 201 "./src/decomment.c"
+# 203 "decomment.c"
                             );
           break;
         }
@@ -1015,19 +1017,19 @@ int main(void)
           line_cur++;
         }
         else if(ch == 
-# 219 "./src/decomment.c" 3 4
+# 221 "decomment.c" 3 4
                      (-1)
-# 219 "./src/decomment.c"
+# 221 "decomment.c"
                         ){
           fprintf(
-# 220 "./src/decomment.c" 3 4
+# 222 "decomment.c" 3 4
                  stderr
-# 220 "./src/decomment.c"
+# 222 "decomment.c"
                        , "Error: line %d: unterminated comment\n", line_com);
           return(
-# 221 "./src/decomment.c" 3 4
+# 223 "decomment.c" 3 4
                 1
-# 221 "./src/decomment.c"
+# 223 "decomment.c"
                             );
           break;
         }
@@ -1051,19 +1053,19 @@ int main(void)
           line_cur++;
         }
         else if(ch == 
-# 243 "./src/decomment.c" 3 4
+# 245 "decomment.c" 3 4
                      (-1)
-# 243 "./src/decomment.c"
+# 245 "decomment.c"
                         ){
           fprintf(
-# 244 "./src/decomment.c" 3 4
+# 246 "decomment.c" 3 4
                  stderr
-# 244 "./src/decomment.c"
+# 246 "decomment.c"
                        , "Error: line %d: unterminated comment\n", line_com);
           return(
-# 245 "./src/decomment.c" 3 4
+# 247 "decomment.c" 3 4
                 1
-# 245 "./src/decomment.c"
+# 247 "decomment.c"
                             );
           break;
         }
@@ -1075,16 +1077,16 @@ int main(void)
       default:
 
         return(
-# 255 "./src/decomment.c" 3 4
+# 257 "decomment.c" 3 4
               1
-# 255 "./src/decomment.c"
+# 257 "decomment.c"
                           );
         break;
     }
   }
   return(
-# 259 "./src/decomment.c" 3 4
+# 261 "decomment.c" 3 4
         0
-# 259 "./src/decomment.c"
+# 261 "decomment.c"
                     );
 }
