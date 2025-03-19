@@ -809,7 +809,7 @@ int main(void)
     if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
       putchar(ch);
       checkString = (checkString == ON) ? OFF : ON;
-      break;
+      continue;
     }
 
 
@@ -819,7 +819,7 @@ int main(void)
     if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
       putchar(ch);
       checkChar = (checkChar == ON) ? OFF : ON;
-      break;
+      continue;
     }
 
 

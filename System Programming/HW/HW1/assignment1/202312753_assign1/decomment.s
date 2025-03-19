@@ -18,12 +18,12 @@ main:
 	.cfi_def_cfa_register 6
 	subq	$32, %rsp
 	movl	$1, -28(%rbp)
-	movl	$-1, -16(%rbp)
+	movl	$-1, -8(%rbp)
 	movl	$1, -24(%rbp)
-	movl	$1, -12(%rbp)
-	movl	$1, -8(%rbp)
+	movl	$1, -20(%rbp)
+	movl	$1, -16(%rbp)
 .L23:
-	movl	$0, -20(%rbp)
+	movl	$0, -12(%rbp)
 	call	getchar@PLT
 	movl	%eax, -4(%rbp)
 	cmpl	$-1, -4(%rbp)
@@ -32,138 +32,138 @@ main:
 	movb	%al, -29(%rbp)
 	cmpb	$-1, -29(%rbp)
 	jne	.L4
-	movl	$1, -20(%rbp)
+	movl	$1, -12(%rbp)
 .L4:
 	cmpb	$34, -29(%rbp)
 	jne	.L5
 	cmpl	$1, -24(%rbp)
 	jne	.L5
-	cmpl	$1, -8(%rbp)
+	cmpl	$1, -16(%rbp)
 	jne	.L5
 	movsbl	-29(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
-	cmpl	$0, -12(%rbp)
+	cmpl	$0, -20(%rbp)
 	sete	%al
 	movzbl	%al, %eax
-	movl	%eax, -12(%rbp)
-	jmp	.L3
+	movl	%eax, -20(%rbp)
+	jmp	.L6
 .L5:
 	cmpb	$39, -29(%rbp)
-	jne	.L6
+	jne	.L7
 	cmpl	$1, -24(%rbp)
-	jne	.L6
-	cmpl	$1, -12(%rbp)
-	jne	.L6
+	jne	.L7
+	cmpl	$1, -20(%rbp)
+	jne	.L7
 	movsbl	-29(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
-	cmpl	$0, -8(%rbp)
+	cmpl	$0, -16(%rbp)
 	sete	%al
 	movzbl	%al, %eax
-	movl	%eax, -8(%rbp)
-	jmp	.L3
-.L6:
+	movl	%eax, -16(%rbp)
+	jmp	.L6
+.L7:
 	cmpb	$47, -29(%rbp)
-	jne	.L7
-	cmpl	$1, -12(%rbp)
-	jne	.L7
-	cmpl	$1, -8(%rbp)
-	jne	.L7
+	jne	.L8
+	cmpl	$1, -20(%rbp)
+	jne	.L8
+	cmpl	$1, -16(%rbp)
+	jne	.L8
 	call	getchar@PLT
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax
 	movb	%al, -29(%rbp)
 	cmpb	$47, -29(%rbp)
-	jne	.L8
+	jne	.L9
 	movl	-28(%rbp), %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -8(%rbp)
 	movl	$0, -24(%rbp)
 	movl	$32, %edi
 	call	putchar@PLT
-.L11:
+.L12:
 	call	getchar@PLT
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax
 	movb	%al, -29(%rbp)
 	cmpb	$10, -29(%rbp)
-	jne	.L11
+	jne	.L12
 	addl	$1, -28(%rbp)
 	movl	$1, -24(%rbp)
 	movsbl	-29(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
 	nop
-	jmp	.L20
-.L8:
+	jmp	.L6
+.L9:
 	cmpb	$42, -29(%rbp)
-	jne	.L13
+	jne	.L14
 	movl	-28(%rbp), %eax
-	movl	%eax, -16(%rbp)
+	movl	%eax, -8(%rbp)
 	movl	$32, %edi
 	call	putchar@PLT
 	movl	$0, -24(%rbp)
-	jmp	.L14
-.L19:
+	jmp	.L15
+.L20:
 	call	getchar@PLT
 	movl	%eax, -4(%rbp)
 	movl	-4(%rbp), %eax
 	movb	%al, -29(%rbp)
 	cmpb	$10, -29(%rbp)
-	jne	.L15
+	jne	.L16
 	movl	$10, %edi
 	call	putchar@PLT
 	addl	$1, -28(%rbp)
-.L15:
+.L16:
 	cmpb	$42, -29(%rbp)
-	jne	.L16
+	jne	.L17
 	call	getchar@PLT
 	movl	%eax, -4(%rbp)
 	cmpl	$47, -4(%rbp)
-	jne	.L17
+	jne	.L18
 	movl	$1, -24(%rbp)
-	jmp	.L16
-.L17:
+	jmp	.L17
+.L18:
 	movq	stdin(%rip), %rdx
 	movl	-4(%rbp), %eax
 	movq	%rdx, %rsi
 	movl	%eax, %edi
 	call	ungetc@PLT
-.L16:
+.L17:
 	cmpb	$-1, -29(%rbp)
-	jne	.L14
-	movl	$1, -20(%rbp)
+	jne	.L15
+	movl	$1, -12(%rbp)
 	movq	stderr(%rip), %rax
-	movl	-16(%rbp), %edx
+	movl	-8(%rbp), %edx
 	leaq	.LC0(%rip), %rcx
 	movq	%rcx, %rsi
 	movq	%rax, %rdi
 	movl	$0, %eax
 	call	fprintf@PLT
 	movl	$1, %eax
-	jmp	.L18
-.L14:
+	jmp	.L19
+.L15:
 	cmpl	$0, -24(%rbp)
-	je	.L19
-	jmp	.L20
-.L13:
+	je	.L20
+	jmp	.L6
+.L14:
 	movl	$47, %edi
 	call	putchar@PLT
 	movsbl	-29(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
-	jmp	.L20
-.L7:
+	jmp	.L6
+.L8:
 	cmpb	$10, -29(%rbp)
 	jne	.L21
 	addl	$1, -28(%rbp)
 .L21:
-	cmpl	$0, -20(%rbp)
+	cmpl	$0, -12(%rbp)
 	jne	.L25
 	movsbl	-29(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
-.L20:
+.L6:
 	jmp	.L23
 .L24:
 	nop
@@ -172,7 +172,7 @@ main:
 	nop
 .L3:
 	movl	$0, %eax
-.L18:
+.L19:
 	leave
 	.cfi_def_cfa 7, 8
 	ret

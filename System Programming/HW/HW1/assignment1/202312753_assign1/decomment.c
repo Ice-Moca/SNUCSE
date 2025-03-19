@@ -29,6 +29,7 @@ int main(void)
   enum state checkComment = OFF; // 주석 내부인지 아닌지 확인
   enum state checkString = OFF; // 문자열 내부인지 아닌지 확인
   enum state checkChar = OFF; // 문자 내부인지 아닌지 확인
+  
 
   while (1) {
     int got_eof = 0;
@@ -52,7 +53,7 @@ int main(void)
     if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
       putchar(ch);
       checkString = (checkString == ON) ? OFF : ON; 
-      break;
+      continue;
     }
     
     // 코드의 시작부분에 있는 Char부분 확인
@@ -62,7 +63,7 @@ int main(void)
     if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
       putchar(ch);
       checkChar = (checkChar == ON) ? OFF : ON; 
-      break;
+      continue;
     }
 
     // 코드의 시작부분에 있는 주석부분 확인
