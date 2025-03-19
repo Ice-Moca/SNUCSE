@@ -1,2 +1,2 @@
-# SNU_ComputerProgramming
-Seoul National Univ. CE. Codes
+# SNU_ComputerScience&Engineering
+Seoul National Univ. CSE. Codes
