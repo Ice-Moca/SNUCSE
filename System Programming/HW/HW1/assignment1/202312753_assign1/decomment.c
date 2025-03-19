@@ -25,8 +25,8 @@ int main(void)
   // This while loop reads all characters from standard input one by one
 
   //state
-  enum DFAstate {START, CheckChar, CheckString, CheckCommentStart, 
-                Twobar_Comment, OneStar_Comment, CheckCommentEnd};
+  enum DFAstate {START, CheckChar, CheckString, CheckCommentStart, CheckEscapeSequenceChar, 
+    CheckEscapeSequenceString, Twobar_Comment, OneStar_Comment, CheckCommentEnd};
   enum DFAstate DFAstate = START;
   while (1) {
     //int got_eof = 0;
@@ -68,6 +68,96 @@ int main(void)
         }
         break;
 
+      case CheckString:
+      // 코드 내부의 문자열 부분
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      // - ch가 '"'이면, ch를 출력하고 START로 상태를 변경한다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - ch가 '\\'이면, ch를 출력하고 CheckEscapeSequence로 변경한다.
+      // - 그 외의 경우, ch를 출력한다.
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '\\'){
+          DFAstate = CheckEscapeSequenceString;
+        }
+
+        if(ch == '"'){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+
+      case CheckChar:
+      // 코드 내부의 문자 부분
+      //  - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      //  - ch가 '\''이면, ch를 출력하고 START로 상태를 변경한다.
+      //  - ch가 EOF이면, 프로그램을 종료한다.
+      //  - ch가 '\\'이면, ch를 출력하고 CheckEscapeSequence로 변경한다.
+      //  - 그 외의 경우, ch를 출력한다.
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '\\'){
+          DFAstate = CheckEscapeSequenceChar;
+        }
+
+        if(ch == '\''){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+      
+      case CheckEscapeSequenceChar:
+        if(ch=='\''||ch=='"'){
+          putchar(ch);
+          DFAstate = CheckChar;
+        }
+        else if(ch=='\\'){
+          putchar(ch);
+        }
+        else if(ch==EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+          DFAstate = CheckChar;
+        }
+        break;
+
+      case CheckEscapeSequenceString:
+        if(ch=='\''||ch=='"'){
+          putchar(ch);
+          DFAstate = CheckString;
+        }
+        else if(ch=='\\'){
+          putchar(ch);
+        }
+        else if(ch==EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+          DFAstate = CheckString;
+        }
+        break;
+
       case CheckCommentStart:
         if(ch == '/'){
           putchar(' ');
@@ -94,50 +184,6 @@ int main(void)
           putchar('/');
           putchar(ch);
           DFAstate = START;
-        }
-        break;
-
-      case CheckString:
-      // 코드 내부의 문자열 부분
-      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
-      // - ch가 '"'이면, ch를 출력하고 START로 상태를 변경한다.
-      // - ch가 EOF이면, 프로그램을 종료한다.
-      // - 그 외의 경우, ch를 출력한다.
-        if(ch == '\n'){
-          line_cur++;
-        }
-        if(ch == '"'){
-          putchar(ch);
-          DFAstate = START;
-        }
-        else if(ch == EOF){
-          return(EXIT_SUCCESS);
-          break;
-        }
-        else{
-          putchar(ch);
-        }
-        break;
-
-      case CheckChar:
-      // 코드 내부의 문자 부분
-      //  - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
-      //  - ch가 '\''이면, ch를 출력하고 START로 상태를 변경한다.
-      //  - ch가 EOF이면, 프로그램을 종료한다.
-      //  - 그 외의 경우, ch를 출력한다.
-        if(ch == '\n'){
-          line_cur++;
-        }
-        if(ch == '\''){
-          putchar(ch);
-          DFAstate = START;
-        }
-        else if(ch == EOF){
-          return(EXIT_SUCCESS);
-          break;
-        }
-        else{
-          putchar(ch);
         }
         break;
       
