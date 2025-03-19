@@ -6,36 +6,24 @@ A description of whatever help (if any) you received from others while doing the
 and the names of any individuals with whom you collaborated, as prescribed by the course Policy web page.
 (Answer) I did not receive any help from others while doing this assignment.
 
-(Optional Qusetion1 Answer) I spent approximately 4 hours on this assignment. 
-(Optional Question2 Answer) Your assessment of the assignment: Did it help you to learn? 
-What did it help you to learn? Do you have any suggestions for improvement? Etc.
+(Optional Qusetion1 Answer) I spent approximately 10 hours on this assignment. 
+(Optional Question2 Answer) 
 It helped me to learn the basic concept of decommenting and tokenizing.
 I think it would be better if the assignment was more detailed and had more examples about how to make the files like decomment.i & etc.
 Though it was suggested on the ppt, I think it would be better if the assignment had more detailed instructions about how to make the files.
 
 (Optional Quesetion3 Answer) Any information that will help us to grade your work in the most favorable light. 
 In particular you should describe all known bugs.
-Actually I had 2 bugs for the given test codes. It was when we get the EOF as ch, we need to add the enter(which is '\n') to the output.
+Actually I had 2 bugs for the given test codes. It was when we get the EOF as ch, we need to add the enter at the last(which is '\n') to the output.
 And the other one was when we get the ***/ as an input of ch, to check the end of Comment I used 
 
-if(ch=='*'){  // 주석이 끝나는지 확인
+if(ch=='*'){  
     ich = getchar();
-    if(ich=='/'){// 주석이 끝나는 부분
-      checkComment=OFF;
+    if(ich=='/'){
+      DFAstate=START;
     }
 }
 
-then when there was odd number of * infront of /, the error happened. SO I changed the code to
-
-if(ch=='*'){  // 주석이 끝나는지 확인
-    ich = getchar();
-    if(ich=='/'){// 주석이 끝나는 부분
-      checkComment=OFF;
-    }
-    else{// **/와 같이 입력이 될때 *바로 뒤에 값이 *이면 주어진 *의 개개수일때 검증이 되지 않않는다.
-      //따라서 뒤의 문자가 /가 아니면 다시 원래 상태로 돌아가기 위해 문자를 앞에 삽입해둔다.
-      ungetc(ich,stdin);
-    }
-  }
-  
+then when there was odd number of * infront of /, the error happened. 
+SO I add the state to check if the Comment ends.
 then It finally worked well.

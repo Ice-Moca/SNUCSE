@@ -774,147 +774,255 @@ int main(void)
 
 
 
-  enum state {ON, OFF};
-  enum state checkComment = OFF;
-  enum state checkString = OFF;
-  enum state checkChar = OFF;
-
+  enum DFAstate {START, CheckChar, CheckString, CheckCommentStart,
+                Twobar_Comment, OneStar_Comment, CheckCommentEnd};
+  enum DFAstate DFAstate = START;
   while (1) {
-    int got_eof = 0;
+
 
     ich = getchar();
-    if (ich == 
-# 37 "./src/decomment.c" 3 4
-              (-1)
-# 37 "./src/decomment.c"
-                 )
-      break;
-
     ch = (char)ich;
 
-
-
-    if(ch == 
-# 44 "./src/decomment.c" 3 4
-            (-1)
-# 44 "./src/decomment.c"
-               ){
-      got_eof = 1;
-    }
-
-
-
-
-
-    if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
-      putchar(ch);
-      checkString = (checkString == ON) ? OFF : ON;
-      continue;
-    }
-
-
-
-
-
-    if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
-      putchar(ch);
-      checkChar = (checkChar == ON) ? OFF : ON;
-      continue;
-    }
-
-
-    if(ch=='/'&&checkString==OFF&&checkChar==OFF){
-      ich= getchar();
-      ch = (char)ich;
-
-
-
-      if(ch=='/'){
-# 89 "./src/decomment.c"
-        line_com = line_cur;
-        checkComment=ON;
-        putchar(' ');
-        while(1){
-          ich = getchar();
-          ch = (char)ich;
-          if(ch=='\n'){
-            line_cur++;
-            checkComment=OFF;
-            putchar(ch);
-            break;
-          }
+    switch(DFAstate){
+# 46 "./src/decomment.c"
+      case START:
+        if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
         }
-      }
-      else if(ch=='*'){
-# 117 "./src/decomment.c"
-        line_com = line_cur;
-        putchar(' ');
-        checkComment=ON;
-        while(checkComment==ON){
-          ich = getchar();
-          ch = (char)ich;
-          if(ch=='\n'){
-
-            putchar('\n');
-            line_cur++;
-          }
-          if(ch=='*'){
-
-
-            ich = getchar();
-            if(ich=='/'){
-              checkComment=OFF;
-            }
-            else{
-              ungetc(ich,
-# 136 "./src/decomment.c" 3 4
-                        stdin
-# 136 "./src/decomment.c"
-                             );
-            }
-          }
-          if(ch==
-# 139 "./src/decomment.c" 3 4
-                (-1)
-# 139 "./src/decomment.c"
-                   ){
-
-
-            got_eof = 1;
-            fprintf(
-# 143 "./src/decomment.c" 3 4
-                   stderr
-# 143 "./src/decomment.c"
-                         , "Error: line %d: unterminated comment\n", line_com);
-            return (
-# 144 "./src/decomment.c" 3 4
-                   1
-# 144 "./src/decomment.c"
-                               );
-            break;
-          }
+        else if(ch == '/'){
+          DFAstate = CheckCommentStart;
         }
-      }
-      else{
-        putchar('/');
-        putchar(ch);
-      }
-    }
-    else{
-
-
-      if (ch == '\n'){
-        line_cur++;
-      }
-      if (got_eof){
+        else if(ch == '"'){
+          putchar(ch);
+          DFAstate = CheckString;
+        }
+        else if(ch == '\''){
+          putchar(ch);
+          DFAstate = CheckChar;
+        }
+        else if(ch == 
+# 62 "./src/decomment.c" 3 4
+                     (-1)
+# 62 "./src/decomment.c"
+                        ){
+          return(
+# 63 "./src/decomment.c" 3 4
+                0
+# 63 "./src/decomment.c"
+                            );
+          break;
+        }
+        else{
+          putchar(ch);
+        }
         break;
-      }
-      putchar(ch);
+
+      case CheckCommentStart:
+        if(ch == '/'){
+          putchar(' ');
+          line_com=line_cur;
+          DFAstate = Twobar_Comment;
+        }
+        else if(ch == '*'){
+          putchar(' ');
+          line_com=line_cur;
+          DFAstate = OneStar_Comment;
+        }
+        else if(ch == '\n'){
+          putchar('/');
+          putchar(ch);
+          line_cur++;
+          DFAstate = START;
+        }
+        else if( ch == 
+# 88 "./src/decomment.c" 3 4
+                      (-1)
+# 88 "./src/decomment.c"
+                         ){
+          putchar('/');
+          return(
+# 90 "./src/decomment.c" 3 4
+                0
+# 90 "./src/decomment.c"
+                            );
+          break;
+        }
+        else{
+          putchar('/');
+          putchar(ch);
+          DFAstate = START;
+        }
+        break;
+
+      case CheckString:
+
+
+
+
+
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '"'){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == 
+# 113 "./src/decomment.c" 3 4
+                     (-1)
+# 113 "./src/decomment.c"
+                        ){
+          return(
+# 114 "./src/decomment.c" 3 4
+                0
+# 114 "./src/decomment.c"
+                            );
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+
+      case CheckChar:
+
+
+
+
+
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '\''){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == 
+# 135 "./src/decomment.c" 3 4
+                     (-1)
+# 135 "./src/decomment.c"
+                        ){
+          return(
+# 136 "./src/decomment.c" 3 4
+                0
+# 136 "./src/decomment.c"
+                            );
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+
+      case Twobar_Comment:
+
+
+
+
+        if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+          DFAstate = START;
+        }
+        else if(ch == 
+# 154 "./src/decomment.c" 3 4
+                     (-1)
+# 154 "./src/decomment.c"
+                        ){
+          return(
+# 155 "./src/decomment.c" 3 4
+                0
+# 155 "./src/decomment.c"
+                            );
+          break;
+        }
+        break;
+
+      case OneStar_Comment:
+
+
+
+
+
+        if(ch == '*'){
+          DFAstate = CheckCommentEnd;
+        }
+        else if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+        }
+        else if(ch == 
+# 173 "./src/decomment.c" 3 4
+                     (-1)
+# 173 "./src/decomment.c"
+                        ){
+          fprintf(
+# 174 "./src/decomment.c" 3 4
+                 stderr
+# 174 "./src/decomment.c"
+                       , "Error: line %d: unterminated comment\n", line_com);
+          return(
+# 175 "./src/decomment.c" 3 4
+                1
+# 175 "./src/decomment.c"
+                            );
+          break;
+        }
+        break;
+
+      case CheckCommentEnd:
+
+
+
+
+
+
+        if(ch == '/'){
+          DFAstate = START;
+        }
+        else if(ch == '*'){
+          DFAstate = CheckCommentEnd;
+        }
+        else if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+        }
+        else if(ch == 
+# 197 "./src/decomment.c" 3 4
+                     (-1)
+# 197 "./src/decomment.c"
+                        ){
+          fprintf(
+# 198 "./src/decomment.c" 3 4
+                 stderr
+# 198 "./src/decomment.c"
+                       , "Error: line %d: unterminated comment\n", line_com);
+          return(
+# 199 "./src/decomment.c" 3 4
+                1
+# 199 "./src/decomment.c"
+                            );
+          break;
+        }
+        else{
+          DFAstate = OneStar_Comment;
+        }
+        break;
+
+      default:
+
+        return(
+# 209 "./src/decomment.c" 3 4
+              1
+# 209 "./src/decomment.c"
+                          );
+        break;
     }
   }
   return(
-# 166 "./src/decomment.c" 3 4
+# 213 "./src/decomment.c" 3 4
         0
-# 166 "./src/decomment.c"
+# 213 "./src/decomment.c"
                     );
 }

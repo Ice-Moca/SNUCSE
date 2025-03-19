@@ -25,143 +25,189 @@ int main(void)
   // This while loop reads all characters from standard input one by one
 
   //state
-  enum state {ON, OFF};
-  enum state checkComment = OFF; // 주석 내부인지 아닌지 확인
-  enum state checkString = OFF; // 문자열 내부인지 아닌지 확인
-  enum state checkChar = OFF; // 문자 내부인지 아닌지 확인
-  
-
+  enum DFAstate {START, CheckChar, CheckString, CheckCommentStart, 
+                Twobar_Comment, OneStar_Comment, CheckCommentEnd};
+  enum DFAstate DFAstate = START;
   while (1) {
-    int got_eof = 0;
+    //int got_eof = 0;
 
     ich = getchar();
-    if (ich == EOF) 
-      break;
-
     ch = (char)ich;
     // TODO: Implement the decommenting logic
-
-    // 굳이 EOF를 이렇게 확인해야 되는지 잘 모르겠음, 주어진 변수니까 그냥 사용;;
-    if(ch == EOF){
-      got_eof = 1;
-    }
-
-    // 코드의 시작부분에 있는 String부분 확인
-    // 문자열 상태를 3항 연산자로 전환
-    // 문자열이 시작되는 부분이면 checkComment ON
-    // 문자열이 끝나는 부분이면 checkComment OFF
-    if((ch=='"'&&checkComment==OFF&&checkChar==OFF)){
-      putchar(ch);
-      checkString = (checkString == ON) ? OFF : ON; 
-      continue;
-    }
-    
-    // 코드의 시작부분에 있는 Char부분 확인
-    // 문자 상태를 3항 연산자로 전환
-    // 문자가 시작되는 부분이면 checkChar ON
-    // 문자가 끝나는 부분이면 checkChar OFF
-    if((ch=='\''&&checkComment==OFF&&checkString==OFF)){
-      putchar(ch);
-      checkChar = (checkChar == ON) ? OFF : ON; 
-      continue;
-    }
-
-    // 코드의 시작부분에 있는 주석부분 확인
-    if(ch=='/'&&checkString==OFF&&checkChar==OFF){
-      ich= getchar();
-      ch = (char)ich;
-      // case1) //로 시작되는 주석
-      // case2) /*로 시작되는 주석
-      // case3) 주석이 아닌 경우
-      if(ch=='/'){ 
-        /* 
-        case1)
-        //로 시작되는 주석
-        주석이 끝나는 부분까지 출력하지 않고 넘어가기
-        while문 안에 while문이 있는 구조이지만 
-        getchar()의 실행빈도는 switch case문 보다 적다.
-        switch case의 경우 //로 시작하는 각주를 추출하기 위해서 
-        getchar()를 2번 실행한다. 또한 state의 정의를 많이 만들어야 되서 error case빈도가 높을 수 있다.
-
-        -ch = \n 일때 주석이 끝난다.
-        -ch = EOF 일때 주석이 끝나지 않고 파일이 끝난다.
-        -이후 /+* 각주가 끝나지 않을때 출력할 메세지를 위해 line_cur을 저장한다.
-        */
-        line_com = line_cur; 
-        checkComment=ON;
-        putchar(' ');
-        while(1){  
-          ich = getchar();
-          ch = (char)ich;
-          if(ch=='\n'){
-            line_cur++;
-            checkComment=OFF;
-            putchar(ch); 
-            break;
-          }
+    switch(DFAstate){
+      // 코드의 시작부분
+      // case START: 코드의 시작부분을 의미한다.
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      // - ch가 '/'이면, CheckCommentStart로 상태를 변경한다.
+      // - ch가 '"'이면, ch를 출력하고 CheckString으로 상태를 변경한다.
+      // - ch가 '\''이면, ch를 출력하고 CheckChar로 상태를 변경한다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - 그 외의 경우, ch를 출력한다.
+      case START:
+        if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
         }
-      }
-      else if(ch=='*'){
-      /* 
-      case2)
-      /+*로 시작되는 주석
-      주석이 끝나는 부분까지 출력하지 않고 넘어가기
-      
-      -ch = \n 일때 주석이 끝나지 않는다.
-      -ch = EOF 일때 주석이 끝나지 않고 파일이 끝난다.
-      -이후 /+*각주가 끝나지 않을때 출력할 메세지를 위해 line_cur을 저장한다.
-
-      case1] 주석이 끝나는 경우
-      case2] 주석이 끝나지 않고 파일이 끝나는 경우 
-      case2의 경우 error메세지를 출력하고 프로그램을 종료한다.
-      */
-        line_com = line_cur; // 주석이 시작되는 줄
-        putchar(' ');
-        checkComment=ON;
-        while(checkComment==ON){
-          ich = getchar();
-          ch = (char)ich;
-          if(ch=='\n'){ 
-            // enter 출력 다만 주석은 계속된다.
-            putchar('\n');
-            line_cur++;
-          } 
-          if(ch=='*'){  
-            // case1]
-            // 주석이 끝나는지 확인
-            ich = getchar();
-            if(ich=='/'){
-              checkComment=OFF;
-            }
-            else{
-              ungetc(ich,stdin);
-            }
-          }
-          if(ch==EOF){ 
-            // case2]
-            // 주석이 끝나지 않고 파일이 끝나는 경우
-            got_eof = 1;
-            fprintf(stderr, "Error: line %d: unterminated comment\n", line_com);//에러파일에 출력
-            return (EXIT_FAILURE);
-            break;
-          }
+        else if(ch == '/'){
+          DFAstate = CheckCommentStart;
         }
-      }
-      else{
-        putchar('/');
-        putchar(ch);
-      }
-    }
-    else{
-      // case3) 주석이 아닌 경우
-      // 코드의 끝부분에 있는 enter와 eof부분 확인
-      if (ch == '\n'){
-        line_cur++;
-      }
-      if (got_eof){
+        else if(ch == '"'){
+          putchar(ch);
+          DFAstate = CheckString;
+        }
+        else if(ch == '\''){
+          putchar(ch);
+          DFAstate = CheckChar;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+        }
         break;
-      }
-      putchar(ch);
+
+      case CheckCommentStart:
+        if(ch == '/'){
+          putchar(' ');
+          line_com=line_cur;  
+          DFAstate = Twobar_Comment;
+        }
+        else if(ch == '*'){
+          putchar(' ');
+          line_com=line_cur;
+          DFAstate = OneStar_Comment;
+        }
+        else if(ch == '\n'){
+          putchar('/');
+          putchar(ch);
+          line_cur++;
+          DFAstate = START;
+        }
+        else if( ch == EOF){
+          putchar('/');
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar('/');
+          putchar(ch);
+          DFAstate = START;
+        }
+        break;
+
+      case CheckString:
+      // 코드 내부의 문자열 부분
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      // - ch가 '"'이면, ch를 출력하고 START로 상태를 변경한다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - 그 외의 경우, ch를 출력한다.
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '"'){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+
+      case CheckChar:
+      // 코드 내부의 문자 부분
+      //  - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      //  - ch가 '\''이면, ch를 출력하고 START로 상태를 변경한다.
+      //  - ch가 EOF이면, 프로그램을 종료한다.
+      //  - 그 외의 경우, ch를 출력한다.
+        if(ch == '\n'){
+          line_cur++;
+        }
+        if(ch == '\''){
+          putchar(ch);
+          DFAstate = START;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        else{
+          putchar(ch);
+        }
+        break;
+      
+      case Twobar_Comment:
+      // //로 시작하는 각주 부분
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시키고 START로 상태를 변경한다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - 그 외의 경우, DFAstate를 Twobar_Comment로 유지한다.
+        if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+          DFAstate = START;
+        }
+        else if(ch == EOF){
+          return(EXIT_SUCCESS);
+          break;
+        }
+        break;
+      
+      case OneStar_Comment:
+      // /+*로 시작하는 각주 부분
+      // - ch가 '*'이면, CheckCommentEnd로 상태를 변경한다.
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - 그 외의 경우, DFAstate를 OneStar_Comment로 유지한다.
+        if(ch == '*'){
+          DFAstate = CheckCommentEnd;
+        }
+        else if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+        }
+        else if(ch == EOF){
+          fprintf(stderr, "Error: line %d: unterminated comment\n", line_com);
+          return(EXIT_FAILURE);
+          break;
+        }
+        break;
+
+      case CheckCommentEnd:
+      // /+*로 시작된 각주가 끝나는지 확인하는 부분
+      // - ch가 '/'이면, START로 상태를 변경한다.
+      // - ch가 '*'이면, CheckCommentEnd로 상태를 유지한다.
+      // - ch가 '\n'이면, ch를 출력하고 line_cur을 1 증가시킨다.
+      // - ch가 EOF이면, 프로그램을 종료한다.
+      // - 그 외의 경우, OneStar_Comment로 상태를 변경한다.
+        if(ch == '/'){
+          DFAstate = START;
+        }
+        else if(ch == '*'){
+          DFAstate = CheckCommentEnd;
+        }
+        else if(ch == '\n'){
+          putchar(ch);
+          line_cur++;
+        }
+        else if(ch == EOF){
+          fprintf(stderr, "Error: line %d: unterminated comment\n", line_com);
+          return(EXIT_FAILURE);
+          break;
+        }
+        else{
+          DFAstate = OneStar_Comment;
+        }
+        break;
+
+      default:
+      // 혹시 모르는 경우를 대비해 default로 설정
+        return(EXIT_FAILURE);
+        break;
     }
   }
   return(EXIT_SUCCESS);
