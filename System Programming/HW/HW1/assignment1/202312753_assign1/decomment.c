@@ -126,10 +126,10 @@ int main(void)
       // Char 안에 EscapeSequence가 오는지 확인하는 부분
         if(ch=='\n'){
           line_cur++;
-          DFAstate = CheckString;
         }
-        if(ch=='\\'){
+        else if(ch=='\\'){
           putchar(ch);
+          DFAstate=CheckChar;
         }
         else if(ch==EOF){
           return(EXIT_SUCCESS);
@@ -145,10 +145,10 @@ int main(void)
       // String 안에 EscapeSequence가 오는지 확인하는 부분
         if(ch=='\n'){
           line_cur++;
-          DFAstate = CheckString;
         }
         if(ch=='\\'){
           putchar(ch);
+          DFAstate=CheckString;
         }
         else if(ch==EOF){
           return(EXIT_SUCCESS);

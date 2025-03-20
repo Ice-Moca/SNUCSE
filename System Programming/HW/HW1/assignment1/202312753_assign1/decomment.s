@@ -144,15 +144,16 @@ main:
 	cmpb	$10, -17(%rbp)
 	jne	.L31
 	addl	$1, -16(%rbp)
-	movl	$2, -8(%rbp)
+	jmp	.L20
 .L31:
 	cmpb	$92, -17(%rbp)
-	jne	.L32
+	jne	.L33
 	movsbl	-17(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
+	movl	$1, -8(%rbp)
 	jmp	.L20
-.L32:
+.L33:
 	cmpb	$-1, -17(%rbp)
 	jne	.L34
 	movl	$0, %eax
@@ -167,13 +168,13 @@ main:
 	cmpb	$10, -17(%rbp)
 	jne	.L35
 	addl	$1, -16(%rbp)
-	movl	$2, -8(%rbp)
 .L35:
 	cmpb	$92, -17(%rbp)
 	jne	.L36
 	movsbl	-17(%rbp), %eax
 	movl	%eax, %edi
 	call	putchar@PLT
+	movl	$2, -8(%rbp)
 	jmp	.L20
 .L36:
 	cmpb	$-1, -17(%rbp)

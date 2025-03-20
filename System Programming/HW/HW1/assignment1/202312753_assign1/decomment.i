@@ -892,10 +892,10 @@ int main(void)
 
         if(ch=='\n'){
           line_cur++;
-          DFAstate = CheckString;
         }
-        if(ch=='\\'){
+        else if(ch=='\\'){
           putchar(ch);
+          DFAstate=CheckChar;
         }
         else if(ch==
 # 134 "decomment.c" 3 4
@@ -919,10 +919,10 @@ int main(void)
 
         if(ch=='\n'){
           line_cur++;
-          DFAstate = CheckString;
         }
         if(ch=='\\'){
           putchar(ch);
+          DFAstate=CheckString;
         }
         else if(ch==
 # 153 "decomment.c" 3 4
