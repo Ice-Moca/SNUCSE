@@ -127,11 +127,8 @@ int main(void)
         if(ch=='\n'){
           line_cur++;
         }
-        else if(ch=='\\'){
-          putchar(ch);
-          DFAstate=CheckChar;
-        }
-        else if(ch==EOF){
+        
+        if(ch==EOF){
           return(EXIT_SUCCESS);
           break;
         }
@@ -146,11 +143,8 @@ int main(void)
         if(ch=='\n'){
           line_cur++;
         }
-        if(ch=='\\'){
-          putchar(ch);
-          DFAstate=CheckString;
-        }
-        else if(ch==EOF){
+
+        if(ch==EOF){
           return(EXIT_SUCCESS);
           break;
         }
