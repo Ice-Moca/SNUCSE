@@ -3,8 +3,8 @@
 //
 /// @file
 /// @brief resursively traverse directory tree and list all entries
-/// @author <EunSu Yeo>
-/// @studid <202312753>
+/// @author <yourname>
+/// @studid <studentid>
 //--------------------------------------------------------------------------------------------------
 
 #define _GNU_SOURCE
@@ -21,7 +21,7 @@
 #include <grp.h>
 #include <pwd.h>
 
-#define MAX_DIR 64            ///< maximum number of supported directories, directory의 최대 개수
+#define MAX_DIR 64            ///< maximum number of supported directories
 
 /// @brief output control flags
 #define F_TREE      0x1       ///< enable tree view
@@ -58,15 +58,14 @@ void panic(const char *msg)
 /// @retval NULL on error or if there are no more entries
 struct dirent *getNext(DIR *dir)
 {
-  struct dirent *next;    //save entry that readdir() read
-  int ignore;             //flag to check entry is '.' or '..'
+  struct dirent *next;
+  int ignore;
 
   do {
     errno = 0;
-    next = readdir(dir);  //if not data in dir, return NULL
-    if (errno != 0) perror(NULL); //if error, print error message
+    next = readdir(dir);
+    if (errno != 0) perror(NULL);
     ignore = next && ((strcmp(next->d_name, ".") == 0) || (strcmp(next->d_name, "..") == 0));
-    //if next is not null and d_name is . or .. set ignore 1
   } while (next && ignore);
 
   return next;
@@ -82,20 +81,16 @@ struct dirent *getNext(DIR *dir)
 /// @retval 1  if a>b
 static int dirent_compare(const void *a, const void *b)
 {
-  //a,b is pointer to struct dirent
-  struct dirent *e1 = (struct dirent*)a; 
+  struct dirent *e1 = (struct dirent*)a;
   struct dirent *e2 = (struct dirent*)b;
 
   // if one of the entries is a directory, it comes first
-  if (e1->d_type != e2->d_type) { 
-    // data type=DT_DIR print that first
-    // else don't care about data type
+  if (e1->d_type != e2->d_type) {
     if (e1->d_type == DT_DIR) return -1;
     if (e2->d_type == DT_DIR) return 1;
   }
 
   // otherwise sorty by name
-  // if data type is same, sort by name
   return strcmp(e1->d_name, e2->d_name);
 }
 
@@ -108,132 +103,110 @@ static int dirent_compare(const void *a, const void *b)
 /// @param flags output control flags (F_*)
 void processDir(const char *dn, const char *pstr, struct summary *stats, unsigned int flags)
 {
-  // TODO
-  //open directory
-  DIR *dir = opendir(dn); 
-
-  if(dir==NULL){ 
-    //if error, print error message
-    fprintf(stderr, "%s: ERROR: %s\n", dn, strerror(errno)); 
+// TODO
+  errno = 0;
+  DIR *dirStream = opendir(dn);
+  if (!dirStream) {
+    if (errno == EACCES) {
+      printf("%sERROR: Permission denied\n", pstr);
+    } else if (errno == ENOENT) {
+      printf("%sERROR: File not found\n", pstr);
+    }
     return;
   }
 
-  // entries: array of pointers to struct dirent
-  // entry: pointer to struct dirent
-  // count: number of entries read
-  // capacity: number of entries that can be stored in entries
-  int count=0; 
-  int capacity = 16;
-  struct dirent *entry;
-  struct dirent **entries=NULL;
-  // entries = malloc(capacity * sizeof(struct dirent*));
-  // malloc: allocate memory for entries
-  // need free(entries) at the end of the function
-  entries = malloc(capacity * sizeof(struct dirent*));
+  struct dirent *entries = (struct dirent *)malloc(sizeof(struct dirent) * 1000000);
+  int entryCount = 0;
+  struct dirent *currentEntry;
 
-  if(!entries){
-    // if entries is null, print error message
-    panic("Out of memory.");
+  while ((currentEntry = getNext(dirStream)) != NULL) {
+    if (!(flags & F_TREE) || currentEntry->d_type == DT_DIR) {
+      entries[entryCount++] = *currentEntry;
+    }
   }
 
-  while((entry=getNext(dir))!=NULL){
-    if(count==capacity){
-      capacity*=2;
-      entries=realloc(entries, capacity*sizeof(struct dirent*));
-      if(!entries){
-        // if entries is null, print error message
-        panic("Out of memory.");
+  qsort(entries, entryCount, sizeof(struct dirent), dirent_compare);
+
+  for (int i = 0; i < entryCount; i++) {
+    char *filePath = (char *)malloc(strlen(dn) + strlen(entries[i].d_name) + 2);
+    sprintf(filePath, "%s/%s", dn, entries[i].d_name);
+
+    if (flags & F_SUMMARY) {
+      switch (entries[i].d_type) {
+        case DT_DIR: stats->dirs++; break;
+        case DT_SOCK: stats->socks++; break;
+        case DT_FIFO: stats->fifos++; break;
+        case DT_LNK: stats->links++; break;
+        case DT_REG: stats->files++; break;
+      }
+      struct stat fileStat;
+      if (lstat(filePath, &fileStat) == 0) {
+        stats->size += fileStat.st_size;
+        stats->blocks += fileStat.st_blocks; // Ensure block count is added
       }
     }
-    // save entry in entries 
-    // count increase after saving entry
-    entries[count++]=entry;
-  }
-  // finish reading directory
-  closedir(dir);
 
-  // quick sort entries by name
-  // entries: array of pointers to struct dirent
-  // count: number of entries
-  // sizeof(struct dirent*): size of each element
-  // dirent_compare: compare function
-  // In qsort function dirent_compare is used to compare entries
-  qsort(entries, count, sizeof(struct dirent*), dirent_compare);
-
-  // loop over all entries
-  // entries is sorted by name in here
-  for (int i = 0; i < count; i++) {
-    struct dirent *e = entries[i];
-    char path[PATH_MAX];
-    // snprintf: write formatted output to sized buffer
-    snprintf(path, sizeof(path), "%s/%s", dn, e->d_name);
-
-    struct stat st;
-    // lstat: get file status
-    // &st: save file metadata in st
-    // if lstat fails, print error message
-    if (lstat(path, &st) == -1) {
-      fprintf(stderr, "%s: ERROR: %s\n", path, strerror(errno));
-      continue;
-    }
-
-    // print file information
-    // if VERBOSE flag is set, print detailed information
     if (flags & F_VERBOSE) {
-      printf("%s%-54.54s %8s:%-8s %10lld %8lld %c\n", 
-            pstr, e->d_name, 
-            getpwuid(st.st_uid)->pw_name, 
-            getgrgid(st.st_gid)->gr_name, 
-            (long long)st.st_size, 
-            (long long)st.st_blocks, 
-            S_ISDIR(st.st_mode) ? 'd' : S_ISLNK(st.st_mode) ? 'l' : S_ISFIFO(st.st_mode) ? 'f' : S_ISSOCK(st.st_mode) ? 's' : ' ');
+      // verbose mode output
+      char *cutFileName = (char *)malloc(strlen(pstr) + strlen(entries[i].d_name) + 1);
+      sprintf(cutFileName, "%s%s", pstr, entries[i].d_name);
+      if (strlen(cutFileName) > 54) {
+        cutFileName[53] = cutFileName[52] = cutFileName[51] = '.';
+        cutFileName[54] = '\0';
+      }
+      printf("%-56.56s", cutFileName);
+      struct stat *currentStat = (struct stat *)malloc(sizeof(struct stat));
+      if (lstat(filePath, currentStat) < 0) { // get metadata
+        // display error if lstat failed
+        switch (errno) {
+        case EACCES:
+          printf("Permission denied\n");
+          break;
+        case ENOENT:
+          printf("File not found\n");
+          break;
+        }
+      } else {
+        struct passwd *pwd;
+        struct group *grp;
+        if (((pwd = getpwuid(currentStat->st_uid)) != NULL) &&
+            ((grp = getgrgid(currentStat->st_gid)) != NULL)) {
+          printf("%-8.8s:%-8.8s  ", pwd->pw_name, grp->gr_name);
+        } else {
+          printf("Permission denied\n");
+          continue;
+        }
+        printf("%*ld ", 10, currentStat->st_size);
+        printf("%*ld ", 8, currentStat->st_blocks);
+
+        switch (entries[i].d_type) {
+          case DT_DIR: printf("d"); break;
+          case DT_SOCK: printf("s"); break;
+          case DT_FIFO: printf("f"); break;
+          case DT_LNK: printf("l"); break;
+          case DT_BLK: printf("b"); break;
+          case DT_CHR: printf("c"); break;
+          default: printf(" ");
+        }
+        printf("\n");
+      }
+      free(cutFileName);
     } else {
-      printf("%s%s\n", pstr, e->d_name);
+      printf("%s%s\n", pstr, entries[i].d_name);
     }
 
-    // bitwise AND operation
-    // S_IFMT: file type mask
-    // st.st_mode contians file type in the Upper 4bits
-    // reference: https://12bme.tistory.com/215 
-
-    switch (st.st_mode & S_IFMT) {
-      case S_IFDIR: // Directory case
-        // if entry is directory, set stats->dirs and increase dirs
-        // snprintf: write formatted output to sized buffer
-        // processDir: recursively process directory with new prefix
-        stats->dirs++;
-        char new_prefix[PATH_MAX];
-        snprintf(new_prefix, sizeof(new_prefix), "%s%s  ", pstr, (flags & F_TREE) ? "|-" : "  ");
-        processDir(path, new_prefix, stats, flags);
-        break;
-
-      case S_IFREG: // Regular file case
-        stats->files++;
-        break;
-
-      case S_IFLNK: // Symbolic link case
-        stats->links++;
-        break;
-
-      case S_IFIFO: // FIFO case
-        stats->fifos++;
-        break;
-
-      case S_IFSOCK: // Socket case
-        stats->socks++;
-        break;
-
-      default:
-        // error case
-        break;
+    if (entries[i].d_type == DT_DIR) {
+      char *newPrefix = (char *)malloc(strlen(pstr) + 3);
+      sprintf(newPrefix, "%s  ", pstr);
+      processDir(filePath, newPrefix, stats, flags);
+      free(newPrefix);
     }
 
-    stats->size += st.st_size;
-    stats->blocks += st.st_blocks;
+    free(filePath);
   }
 
-  //free entries
   free(entries);
+  closedir(dirStream);
 }
 
 
@@ -314,7 +287,6 @@ int main(int argc, char *argv[])
   // process each directory
   //
   // TODO
-  //
   // Pseudo-code
   // - reset statistics (tstat)
   // - loop over all entries in 'directories' (number of entires stored in 'ndir')
@@ -323,37 +295,66 @@ int main(int argc, char *argv[])
   //   - print directory name
   //   - call processDir() for the directory
   //   - if F_SUMMARY flag set: print summary & update statistics
+
+  // reset statistics (tstat)
   memset(&tstat, 0, sizeof(tstat));
-  
-  for (int i = 0; i < ndir; i++) {
-    struct summary dstat = {0};
+  // loop over all entries in 'directories' (number of entires stored in 'ndir')
+  for (int dirIndex = 0; dirIndex < ndir; dirIndex++) {
+    struct summary dirStats;
+    // reset statistics (dstat)
+    memset(&dirStats, 0, sizeof(dirStats));
+
+    // if summary flag set : print header
     if (flags & F_SUMMARY) {
       printf("Name\n");
-      printf("----------------------------------------------------------------------------------------------------\n");
-    }
-
-    printf("%s\n", directories[i]);
-    processDir(directories[i], "", &dstat, flags);
-
-    if (flags & F_SUMMARY) {
-      printf("----------------------------------------------------------------------------------------------------\n");
-      printf("%u files, %u directories, %u links, %u pipes, and %u sockets\n", 
-            dstat.files, dstat.dirs, dstat.links, dstat.fifos, dstat.socks);
       if (flags & F_VERBOSE) {
-        printf("Total size: %llu bytes, Total blocks: %llu\n", dstat.size, dstat.blocks);
+        printf("Name                                                        "
+              "User:Group           Size    Blocks Type\n");
       }
+      printf("-----------------------------------------------------------------"
+            "-----------------------------------\n");
     }
 
-    tstat.files += dstat.files;
-    tstat.dirs += dstat.dirs;
-    tstat.links += dstat.links;
-    tstat.fifos += dstat.fifos;
-    tstat.socks += dstat.socks;
-    tstat.size += dstat.size;
-    tstat.blocks += dstat.blocks;
-  }
-  //...
+    // print directory name
+    printf("%s\n", directories[dirIndex]);
+    // call processDir() for the director
+    processDir(directories[dirIndex], "", &dirStats, flags);
 
+    // if F_SUMMARY flag set: print summary & update statistics
+    if (flags & F_SUMMARY) {
+      tstat.dirs += dirStats.dirs;
+      tstat.files += dirStats.files;
+      tstat.links += dirStats.links;
+      tstat.fifos += dirStats.fifos;
+      tstat.socks += dirStats.socks;
+      tstat.size += dirStats.size;
+      tstat.blocks += dirStats.blocks;
+
+      printf("-----------------------------------------------------------------"
+            "-----------------------------------\n");
+
+      // Print directory summary
+      if (flags & F_TREE) {
+        printf("%d %s\n", dirStats.dirs, dirStats.dirs == 1 ? "directory" : "directories");
+      } 
+      else {
+        char summaryBuffer[500] = {0};
+        snprintf(summaryBuffer, sizeof(summaryBuffer), "%d %s, %d %s, %d %s, %d %s, and %d %s",
+                dirStats.files, dirStats.files == 1 ? "file" : "files",
+                dirStats.dirs, dirStats.dirs == 1 ? "directory" : "directories",
+                dirStats.links, dirStats.links == 1 ? "link" : "links",
+                dirStats.fifos, dirStats.fifos == 1 ? "pipe" : "pipes",
+                dirStats.socks, dirStats.socks == 1 ? "socket" : "sockets");
+
+        if (flags & F_VERBOSE) {
+          printf("%-68.68s   %14llu %8llu\n", summaryBuffer, dirStats.size, dirStats.blocks);
+        } else {
+          printf("%s\n", summaryBuffer);
+        }
+      }
+      printf("\n");
+    }
+  }
 
   //
   // print grand total
