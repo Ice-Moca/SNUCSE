@@ -1,2 +1,1 @@
-# SNU_ComputerScience&Engineering
-Seoul National Univ. CSE. Codes
+# Seoul National University. Computer Science & Engineering
