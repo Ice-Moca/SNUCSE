@@ -103,7 +103,6 @@ static int dirent_compare(const void *a, const void *b)
 /// @param flags output control flags (F_*)
 void processDir(const char *dn, const char *pstr, struct summary *stats, unsigned int flags)
 {
-// TODO
   errno = 0;
   DIR *dirStream = opendir(dn);
   if (!dirStream) {
@@ -115,21 +114,24 @@ void processDir(const char *dn, const char *pstr, struct summary *stats, unsigne
     return;
   }
 
-  struct dirent *entries = (struct dirent *)malloc(sizeof(struct dirent) * 1000000);
+  struct dirent *entries = malloc(sizeof(struct dirent) * 100000); 
   int entryCount = 0;
   struct dirent *currentEntry;
 
   while ((currentEntry = getNext(dirStream)) != NULL) {
-    if (!(flags & F_TREE) || currentEntry->d_type == DT_DIR) {
-      entries[entryCount++] = *currentEntry;
-    }
+    entries[entryCount++] = *currentEntry; 
   }
 
   qsort(entries, entryCount, sizeof(struct dirent), dirent_compare);
 
   for (int i = 0; i < entryCount; i++) {
-    char *filePath = (char *)malloc(strlen(dn) + strlen(entries[i].d_name) + 2);
+    char *filePath = malloc(strlen(dn) + strlen(entries[i].d_name) + 2);
     sprintf(filePath, "%s/%s", dn, entries[i].d_name);
+
+    if (flags & F_TREE) {
+      printf("%s", pstr);
+      printf("%s", (i == entryCount - 1) ? "`-" : "|-");
+    }
 
     if (flags & F_SUMMARY) {
       switch (entries[i].d_type) {
@@ -139,45 +141,34 @@ void processDir(const char *dn, const char *pstr, struct summary *stats, unsigne
         case DT_LNK: stats->links++; break;
         case DT_REG: stats->files++; break;
       }
+
       struct stat fileStat;
       if (lstat(filePath, &fileStat) == 0) {
         stats->size += fileStat.st_size;
-        stats->blocks += fileStat.st_blocks; // Ensure block count is added
+        stats->blocks += fileStat.st_blocks;
       }
     }
 
     if (flags & F_VERBOSE) {
-      // verbose mode output
-      char *cutFileName = (char *)malloc(strlen(pstr) + strlen(entries[i].d_name) + 1);
-      sprintf(cutFileName, "%s%s", pstr, entries[i].d_name);
-      if (strlen(cutFileName) > 54) {
-        cutFileName[53] = cutFileName[52] = cutFileName[51] = '.';
-        cutFileName[54] = '\0';
+      char cutName[128];
+      snprintf(cutName, sizeof(cutName), "%s%s", pstr, entries[i].d_name);
+      if (strlen(cutName) > 54) {
+        cutName[51] = cutName[52] = cutName[53] = '.';
+        cutName[54] = '\0';
       }
-      printf("%-56.56s", cutFileName);
-      struct stat *currentStat = (struct stat *)malloc(sizeof(struct stat));
-      if (lstat(filePath, currentStat) < 0) { // get metadata
-        // display error if lstat failed
-        switch (errno) {
-        case EACCES:
-          printf("Permission denied\n");
-          break;
-        case ENOENT:
-          printf("File not found\n");
-          break;
-        }
-      } else {
-        struct passwd *pwd;
-        struct group *grp;
-        if (((pwd = getpwuid(currentStat->st_uid)) != NULL) &&
-            ((grp = getgrgid(currentStat->st_gid)) != NULL)) {
+
+      printf("%-56.56s", cutName);
+      struct stat fileStat;
+      if (lstat(filePath, &fileStat) == 0) {
+        struct passwd *pwd = getpwuid(fileStat.st_uid);
+        struct group *grp = getgrgid(fileStat.st_gid);
+        if (pwd && grp) {
           printf("%-8.8s:%-8.8s  ", pwd->pw_name, grp->gr_name);
-        } else {
-          printf("Permission denied\n");
-          continue;
+        } 
+        else {
+          printf("????????:????????  ");
         }
-        printf("%*ld ", 10, currentStat->st_size);
-        printf("%*ld ", 8, currentStat->st_blocks);
+        printf("%*ld %*ld ", 10, fileStat.st_size, 8, fileStat.st_blocks);
 
         switch (entries[i].d_type) {
           case DT_DIR: printf("d"); break;
@@ -189,15 +180,16 @@ void processDir(const char *dn, const char *pstr, struct summary *stats, unsigne
           default: printf(" ");
         }
         printf("\n");
+      } else {
+        perror("lstat");
       }
-      free(cutFileName);
     } else {
       printf("%s%s\n", pstr, entries[i].d_name);
     }
 
     if (entries[i].d_type == DT_DIR) {
-      char *newPrefix = (char *)malloc(strlen(pstr) + 3);
-      sprintf(newPrefix, "%s  ", pstr);
+      char *newPrefix = malloc(strlen(pstr) + 5);
+      sprintf(newPrefix, "%s%s", pstr, (i == entryCount - 1) ? "    " : "|   ");
       processDir(filePath, newPrefix, stats, flags);
       free(newPrefix);
     }
@@ -208,6 +200,7 @@ void processDir(const char *dn, const char *pstr, struct summary *stats, unsigne
   free(entries);
   closedir(dirStream);
 }
+
 
 
 /// @brief print program syntax and an optional error message. Aborts the program with EXIT_FAILURE
@@ -306,14 +299,17 @@ int main(int argc, char *argv[])
 
     // if summary flag set : print header
     if (flags & F_SUMMARY) {
-      printf("Name\n");
       if (flags & F_VERBOSE) {
         printf("Name                                                        "
               "User:Group           Size    Blocks Type\n");
       }
-      printf("-----------------------------------------------------------------"
+      else{
+        printf("Name\n");
+        printf("-----------------------------------------------------------------"
             "-----------------------------------\n");
+      } 
     }
+    
 
     // print directory name
     printf("%s\n", directories[dirIndex]);
@@ -334,23 +330,19 @@ int main(int argc, char *argv[])
             "-----------------------------------\n");
 
       // Print directory summary
-      if (flags & F_TREE) {
-        printf("%d %s\n", dirStats.dirs, dirStats.dirs == 1 ? "directory" : "directories");
+      char summaryBuffer[500] = {0};
+      snprintf(summaryBuffer, sizeof(summaryBuffer), "%d %s, %d %s, %d %s, %d %s, and %d %s",
+              dirStats.files, dirStats.files == 1 ? "file" : "files",
+              dirStats.dirs, dirStats.dirs == 1 ? "directory" : "directories",
+              dirStats.links, dirStats.links == 1 ? "link" : "links",
+              dirStats.fifos, dirStats.fifos == 1 ? "pipe" : "pipes",
+              dirStats.socks, dirStats.socks == 1 ? "socket" : "sockets");
+
+      if (flags & F_VERBOSE) {
+        printf("%-68.68s   %14llu %8llu\n", summaryBuffer, dirStats.size, dirStats.blocks);
       } 
       else {
-        char summaryBuffer[500] = {0};
-        snprintf(summaryBuffer, sizeof(summaryBuffer), "%d %s, %d %s, %d %s, %d %s, and %d %s",
-                dirStats.files, dirStats.files == 1 ? "file" : "files",
-                dirStats.dirs, dirStats.dirs == 1 ? "directory" : "directories",
-                dirStats.links, dirStats.links == 1 ? "link" : "links",
-                dirStats.fifos, dirStats.fifos == 1 ? "pipe" : "pipes",
-                dirStats.socks, dirStats.socks == 1 ? "socket" : "sockets");
-
-        if (flags & F_VERBOSE) {
-          printf("%-68.68s   %14llu %8llu\n", summaryBuffer, dirStats.size, dirStats.blocks);
-        } else {
-          printf("%s\n", summaryBuffer);
-        }
+        printf("%s\n", summaryBuffer);
       }
       printf("\n");
     }
