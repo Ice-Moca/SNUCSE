@@ -130,31 +130,39 @@ def generate_example_input2(filepath, n):
             f.write(f"{random.randint(1, n * 2)}\n")
 
 def main():
-    # Prompt user for the value of n
-    try:
-        n = int(input("Enter the value of n (number of random numbers to generate): "))
-        print(f"Received input: {n}")  # 디버깅용 출력
-        
-        if n <= 0:
-            print("Please enter a positive integer.")
+    # Ask the user if they want to process the new files
+    proceed = input("Do you want to process the new files? (yes/no): ").strip().lower()
+    if proceed != "yes":
+        print("Skipping file generation. Using existing files if available.")
+        base_dir = os.path.dirname(__file__)
+        input_filepath1 = os.path.join(base_dir, "example_input1.txt")
+        input_filepath2 = os.path.join(base_dir, "example_input2.txt")
+    else:
+        # Prompt user for the value of n
+        try:
+            n = int(input("Enter the value of n (number of random numbers to generate): "))
+            print(f"Received input: {n}")  # 디버깅용 출력
+            
+            if n <= 0:
+                print("Please enter a positive integer.")
+                return
+        except ValueError:
+            print("Invalid input. Please enter an integer.")
             return
-    except ValueError:
-        print("Invalid input. Please enter an integer.")
-        return
-    
-    # Generate example input files
-    print("Generating example input files...\n")
-    base_dir = os.path.dirname(__file__) 
+        
+        # Generate example input files
+        print("Generating example input files...\n")
+        base_dir = os.path.dirname(__file__) 
 
-    # Filepath for generate_example_input1
-    input_filepath1 = os.path.join(base_dir, "example_input1.txt")
-    generate_example_input1(input_filepath1, n)
-    print(f"Example input file 1 generated at: {input_filepath1}")
+        # Filepath for generate_example_input1
+        input_filepath1 = os.path.join(base_dir, "example_input1.txt")
+        generate_example_input1(input_filepath1, n)
+        print(f"Example input file 1 generated at: {input_filepath1}")
 
-    # Filepath for generate_example_input2
-    input_filepath2 = os.path.join(base_dir, "example_input2.txt")
-    generate_example_input2(input_filepath2, n)
-    print(f"Example input file 2 generated at: {input_filepath2}")
+        # Filepath for generate_example_input2
+        input_filepath2 = os.path.join(base_dir, "example_input2.txt")
+        generate_example_input2(input_filepath2, n)
+        print(f"Example input file 2 generated at: {input_filepath2}")
     
     # Process each example input file
     for input_filepath in [input_filepath1, input_filepath2]:
@@ -167,7 +175,21 @@ def main():
 
         # (1) Read all input data into memory.
         arr = read_input(input_filepath)
-        i = random.randint(1, len(arr))  # Select a random i within the range of the array
+        
+        # Ask the user if they want to input `i` manually or generate it randomly
+        i_choice = input("Do you want to input `i` manually? (yes/no): ").strip().lower()
+        if i_choice == "yes":
+            try:
+                i = int(input(f"Enter the value of i (1 <= i <= {len(arr)}): "))
+                if i < 1 or i > len(arr):
+                    print(f"Invalid input. Please enter a value between 1 and {len(arr)}.")
+                    continue
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
+                continue
+        else:
+            i = random.randint(1, len(arr))  # Select a random i within the range of the array
+            print(f"Randomly selected i: {i}")
         
         # (2) Run the randomized-select algorithm for the given input, and measure the time.
         start = time.time()
