@@ -1,0 +1,30 @@
+palindrome: new sequence
+palindrome newInt: 1
+palindrome newInt: 1
+palindrome newInt: 1
+palindrome newInt: 1
+palindrome Check: true 4
+palindrome: new sequence
+palindrome newInt: 2
+palindrome newInt: 3
+palindrome newInt: 5
+palindrome newInt: 3
+palindrome newInt: 2
+palindrome Check: true 5
+palindrome: new sequence
+palindrome newInt: 2
+palindrome newInt: 3
+palindrome newInt: 5
+palindrome newInt: 5
+palindrome newInt: 3
+palindrome newInt: 2
+palindrome Check: false 5
+palindrome: new sequence
+palindrome newInt: 2
+palindrome newInt: 2
+palindrome Check: true 2
+palindrome newInt: 3
+palindrome newInt: 3
+palindrome newInt: 2
+palindrome newInt: 2
+palindrome Check: false 5

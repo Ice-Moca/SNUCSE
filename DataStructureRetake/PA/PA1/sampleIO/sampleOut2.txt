@@ -1,0 +1,14 @@
+queue enqueue: 20
+queue enqueue: 30
+queue dequeue: 20
+queue is not empty
+queue enqueue: 40
+queue length: 2
+queue dequeue: 30
+queue dequeue: 40
+queue is empty
+queue length: 0
+queue enqueue: 50
+queue cleared
+queue is empty
+queue length: 0

@@ -1,0 +1,14 @@
+queue enqueue 20
+queue enqueue 30
+queue dequeue
+queue isempty
+queue enqueue 40
+queue length
+queue dequeue
+queue dequeue
+queue isempty
+queue length
+queue enqueue 50
+queue clear
+queue isempty
+queue length

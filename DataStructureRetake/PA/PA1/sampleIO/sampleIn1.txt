@@ -1,0 +1,15 @@
+stack push 10
+stack push 20
+stack push 30
+stack pop
+stack isempty
+stack push 40
+stack length
+stack pop
+stack pop
+stack pop
+stack isempty
+stack push 50
+stack clear
+stack isempty
+stack length
