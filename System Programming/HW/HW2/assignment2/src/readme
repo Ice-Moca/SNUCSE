@@ -1,0 +1,63 @@
+# readme
+
+## Name: 여은수  
+## Student ID: 2023-12753  
+## Assignment Number: 2  
+
+---
+
+### A description of whatever help (if any) you received from others while doing the assignment, and the names of any individuals with whom you collaborated, as prescribed by the course Policy web page.
+**Answer**: I did not receive any help from others while doing this assignment.
+
+---
+
+### (Optional Question 1) How much time did you spend on this assignment?  
+**Answer**: I spent approximately 1.5 weeks on this assignment.
+
+---
+
+### (Optional Question 2) What did you learn from this assignment?  
+**Answer**:  
+Through this assignment, I learned the following concepts:
+- The use of `malloc`, `realloc`, and `free` for dynamic memory allocation and management.
+- How to dynamically resize arrays using `realloc` to handle an arbitrary number of files and directories.
+- The importance of proper memory management to avoid memory leaks and ensure efficient resource usage.
+- How to handle directory traversal using `opendir`, `readdir`, and `closedir`.
+- The difference between `stdout` and `stderr` and how to manage output order using `fflush`.
+
+This assignment helped me understand how to build scalable programs that can handle large datasets, such as processing over 1,000,000 files and directories.
+
+---
+
+### (Optional Question 3) Any information that will help us to grade your work in the most favorable light.  
+**Answer**:  
+- The program is designed to handle over 1,000,000 files and directories efficiently by dynamically 
+    resizing the `entries` array using `realloc`.
+- Proper error handling is implemented for memory allocation failures (`malloc` and `realloc`) 
+    and file system operations (`opendir`, `lstat`, etc.).
+- The program ensures that error messages are printed to `stderr` and maintains the correct order 
+    of output by flushing `stdout` before printing to `stderr`.
+- The summary line is truncated to 68 characters if it exceeds the limit, 
+    with an ellipsis (`...`) appended to indicate truncation.
+- The program has been tested with both shallow and deeply nested directories 
+    (up to depth 21) to ensure correctness and robustness.
+
+---
+
+### Known Bugs or Limitations:
+- **Bug 1**: Initially, in `F_TREE` mode, the program used "  " or "|-", "`-" based on 
+    whether `-t` was specified. However, this caused difficulties when truncating 
+    file names in `F_VERBOSE` mode. To resolve this, the `pstr` string was updated 
+    to `updatedPstr` and passed down recursively to ensure consistent prefix handling.
+
+- **Bug 2**: The alignment of `pwd` (user name) and `grp` (group name) was not as expected. 
+    After researching formatting options in `printf`, the issue was resolved by using `%8.8s` 
+    for right alignment of `pwd` and `%-8.8s` for left alignment of `grp`.
+
+---
+
+### Additional Notes:
+This assignment provided valuable hands-on experience with system-level programming concepts, 
+particularly dynamic memory management and file system traversal. 
+The resolution of bugs related to string formatting and prefix handling improved 
+the robustness and readability of the program.

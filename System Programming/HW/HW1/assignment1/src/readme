@@ -1,0 +1,29 @@
+Name: 여은수 
+Student ID: 2023-12753
+Assignment number: 1
+
+A description of whatever help (if any) you received from others while doing the assignment, 
+and the names of any individuals with whom you collaborated, as prescribed by the course Policy web page.
+(Answer) I did not receive any help from others while doing this assignment.
+
+(Optional Qusetion1 Answer) I spent approximately 10 hours on this assignment. 
+(Optional Question2 Answer) 
+It helped me to learn the basic concept of decommenting and tokenizing.
+I think it would be better if the assignment was more detailed and had more examples about how to make the files like decomment.i & etc.
+Though it was suggested on the ppt, I think it would be better if the assignment had more detailed instructions about how to make the files.
+
+(Optional Quesetion3 Answer) Any information that will help us to grade your work in the most favorable light. 
+In particular you should describe all known bugs.
+Actually I had 2 bugs for the given test codes. It was when we get the EOF as ch, we need to add the enter at the last(which is '\n') to the output.
+And the other one was when we get the ***/ as an input of ch, to check the end of Comment I used 
+
+if(ch=='*'){  
+    ich = getchar();
+    if(ich=='/'){
+      DFAstate=START;
+    }
+}
+
+then when there was odd number of * infront of /, the error happened. 
+SO I add the state to check if the Comment ends.
+then It finally worked well.
