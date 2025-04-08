@@ -54,6 +54,11 @@ This assignment helped me understand how to build scalable programs that can han
     After researching formatting options in `printf`, the issue was resolved by using `%8.8s` 
     for right alignment of `pwd` and `%-8.8s` for left alignment of `grp`.
 
+- **Bug 3**: Initially, the program used `sprintf` for constructing strings such as file paths 
+    and prefixes. However, this caused buffer allocation errors in certain cases, leading to 
+    undefined behavior. The issue was resolved by replacing all `sprintf` calls with `snprintf`, 
+    which ensures that buffer sizes are respected and prevents buffer overflows.
+
 ---
 
 ### Additional Notes:
