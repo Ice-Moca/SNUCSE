@@ -40,7 +40,6 @@ struct summary {
   unsigned long long blocks;  ///< total number of blocks (512 byte blocks)
 };
 
-
 /// @brief abort the program with EXIT_FAILURE and an optional error message
 ///
 /// @param msg optional error message or NULL
@@ -49,7 +48,6 @@ void panic(const char *msg)
   if (msg) fprintf(stderr, "%s\n", msg);
   exit(EXIT_FAILURE);
 }
-
 
 /// @brief read next directory entry from open directory 'dir'. Ignores '.' and '..' entries
 ///
@@ -70,7 +68,6 @@ struct dirent *getNext(DIR *dir)
 
   return next;
 }
-
 
 /// @brief qsort comparator to sort directory entries. Sorted by name, directories first.
 ///
@@ -94,19 +91,16 @@ static int dirent_compare(const void *a, const void *b)
   return strcmp(e1->d_name, e2->d_name);
 }
 
-
-/// @brief recursively process directory @a dn and print its tree
+/// @brief Open a directory and handle errors
 ///
-/// @param dn absolute or relative path string
-/// @param pstr prefix string printed in front of each entry
-/// @param stats pointer to statistics
-/// @param flags output control flags (F_*)
-void processDir(const char *dn, const char *pstr, struct summary *stats, unsigned int flags)
-{
+/// @param dn directory name
+/// @param pstr prefix string
+/// @param flags output control flags
+/// @return DIR* stream on success, NULL on failure
+DIR *openDirectory(const char *dn, const char *pstr, unsigned int flags) {
     errno = 0;
-    DIR *dirStream = opendir(dn); // Open the directory stream
+    DIR *dirStream = opendir(dn);
     if (!dirStream) {
-        // Handle errors when opening the directory
         size_t errorPstrSize = strlen(pstr) + 3; // +3 for "`-" or "  " and null terminator
         char *errorPstr = malloc(errorPstrSize);
         if (!errorPstr) {
@@ -115,190 +109,239 @@ void processDir(const char *dn, const char *pstr, struct summary *stats, unsigne
         }
 
         if (flags & F_TREE) {
-            snprintf(errorPstr, errorPstrSize, "%s`-", pstr); // Add tree structure prefix for error message
-        } else {
-            snprintf(errorPstr, errorPstrSize, "%s  ", pstr); // Add simple prefix for error message
+            snprintf(errorPstr, errorPstrSize, "%s`-", pstr);
+        } 
+        else {
+            snprintf(errorPstr, errorPstrSize, "%s  ", pstr);
         }
 
-        fflush(stdout); // Flush stdout to maintain correct order of output
+        fflush(stdout);
 
         if (errno == EACCES) {
-            fprintf(stderr, "%sERROR: Permission denied\n", errorPstr); // Permission denied error
-        } else if (errno == ENOENT) {
-            fprintf(stderr, "%sERROR: No such file or directory\n", errorPstr); // File or directory not found error
+            fprintf(stderr, "%sERROR: Permission denied\n", errorPstr);
+        } 
+        else if (errno == ENOENT) {
+            fprintf(stderr, "%sERROR: No such file or directory\n", errorPstr);
         }
         free(errorPstr);
-        return;
+    }
+    return dirStream;
+}
+
+/// @brief Read all entries in a directory
+///
+/// @param dirStream open directory stream
+/// @param entries pointer to the entries array
+/// @param entryCount pointer to the current entry count
+/// @param entryCapacity pointer to the current entry capacity
+void readDirectoryEntries(DIR *dirStream, struct dirent **entries, int *entryCount, int *entryCapacity) {
+    struct dirent *currentEntry;
+    while ((currentEntry = getNext(dirStream)) != NULL) {
+        if (*entryCount >= *entryCapacity) {
+            *entryCapacity *= 2; // Double the capacity
+            struct dirent *newEntries = realloc(*entries, sizeof(struct dirent) * (*entryCapacity));
+            if (!newEntries) {
+                perror("Failed to reallocate memory for entries");
+                free(*entries);
+                closedir(dirStream);
+                exit(EXIT_FAILURE);
+            }
+            *entries = newEntries;
+        }
+        (*entries)[(*entryCount)++] = *currentEntry;
+    }
+}
+
+/// @brief Construct a full file path
+///
+/// @param dn directory name
+/// @param entryName entry name
+/// @return dynamically allocated string containing the full file path
+char *constructFilePath(const char *dn, const char *entryName) {
+    size_t filePathSize = strlen(dn) + strlen(entryName) + 2; // +2 for '/' and null terminator
+    char *filePath = malloc(filePathSize);
+    if (!filePath) {
+        perror("Failed to allocate memory for filePath");
+        exit(EXIT_FAILURE);
+    }
+    snprintf(filePath, filePathSize, "%s/%s", dn, entryName);
+    return filePath;
+}
+
+/// @brief Construct an updated prefix string
+///
+/// @param pstr current prefix string
+/// @param isLastEntry whether this is the last entry in the directory
+/// @param flags output control flags
+/// @return dynamically allocated string containing the updated prefix
+char *constructUpdatedPrefix(const char *pstr, int isLastEntry, unsigned int flags) {
+    size_t updatedPstrSize = strlen(pstr) + 3; // +3 for "`-" or "|-" and null terminator
+    char *updatedPstr = malloc(updatedPstrSize);
+    if (!updatedPstr) {
+        perror("Failed to allocate memory for updatedPstr");
+        exit(EXIT_FAILURE);
+    }
+    if (flags & F_TREE) {
+        snprintf(updatedPstr, updatedPstrSize, "%s%s", pstr, isLastEntry ? "`-" : "|-");
+    } 
+    else {
+        snprintf(updatedPstr, updatedPstrSize, "%s  ", pstr);
+    }
+    return updatedPstr;
+}
+
+/// @brief Update statistics for a directory entry
+///
+/// @param entry current directory entry
+/// @param filePath full path of the entry
+/// @param stats pointer to the summary structure
+void updateStatistics(const struct dirent *entry, const char *filePath, struct summary *stats) {
+    switch (entry->d_type) {
+        case DT_DIR: stats->dirs++; break;      // Count directories
+        case DT_SOCK: stats->socks++; break;    // Count sockets
+        case DT_FIFO: stats->fifos++; break;    // Count pipes
+        case DT_LNK: stats->links++; break;     // Count links
+        case DT_REG: stats->files++; break;     // Count regular files
     }
 
-    struct dirent *entries = NULL;
-    int entryCount = 0;
-    int entryCapacity = 1000; // Initial capacity for directory entries
+    struct stat fileStat;
+    if (lstat(filePath, &fileStat) == 0) {
+        stats->size += fileStat.st_size;        // Update total size
+        stats->blocks += fileStat.st_blocks;   // Update total blocks
+    }
+}
 
-    // Allocate memory for storing directory entries
-    entries = malloc(sizeof(struct dirent) * entryCapacity);
+/// @brief Print detailed information for a directory entry
+///
+/// @param entry current directory entry
+/// @param filePath full path of the entry
+/// @param updatedPstr updated prefix string
+void printVerboseInfo(const struct dirent *entry, const char *filePath, const char *updatedPstr) {
+    char cutName[256];
+    snprintf(cutName, sizeof(cutName), "%s", entry->d_name);
+
+    // Calculate maximum allowed length for the name based on prefix length
+    int maxLength = 54 - strlen(updatedPstr);
+    // Truncate long filenames and append "..." at the end
+    if (strlen(cutName) > maxLength) {
+        cutName[maxLength - 3] = '.';
+        cutName[maxLength - 2] = '.';
+        cutName[maxLength - 1] = '.';
+        cutName[maxLength] = '\0';
+    }
+
+    printf("%s%-*.*s", updatedPstr, maxLength + 2, maxLength + 2, cutName);
+
+    struct stat fileStat;
+    if (lstat(filePath, &fileStat) == 0) {
+        struct passwd *pwd = getpwuid(fileStat.st_uid); // Get user information
+        struct group *grp = getgrgid(fileStat.st_gid);  // Get group information
+        if (pwd && grp) {
+            printf("%8.8s:%-8.8s  ", pwd->pw_name, grp->gr_name); // Print user and group names
+        } else {
+            printf("????????:????????  "); // Print placeholder if user/group not found
+        }
+        printf("%*ld  %*ld  ", 10, fileStat.st_size, 8, fileStat.st_blocks); // Print size and blocks
+
+        // Print file type
+        switch (entry->d_type) {
+            case DT_DIR: printf("d"); break; // Directory
+            case DT_SOCK: printf("s"); break; // Socket
+            case DT_FIFO: printf("f"); break; // Pipe
+            case DT_LNK: printf("l"); break; // Link
+            case DT_BLK: printf("b"); break; // Block device
+            case DT_CHR: printf("c"); break; // Character device
+            default: printf(" "); // Regular file or unknown type
+        }
+        printf("\n");
+    } 
+    else {
+        perror("lstat"); // Handle lstat errors
+    }
+}
+
+void processDir(const char *dn, const char *pstr, struct summary *stats, unsigned int flags) {
+    // Step1: Open the directory
+    DIR *dirStream = openDirectory(dn, pstr, flags);
+    if (!dirStream) return;
+
+    // Step2: Read directory entries
+    // Allocate initial memory for entries
+    struct dirent *entries = malloc(sizeof(struct dirent) * 1000);
     if (!entries) {
         perror("Failed to allocate memory for entries");
         exit(EXIT_FAILURE);
     }
+    // Read entries into the array
+    int entryCount = 0;
+    int entryCapacity = 1000;
+    readDirectoryEntries(dirStream, &entries, &entryCount, &entryCapacity);
 
-    struct dirent *currentEntry;
-    // Read all entries in the directory
-    while ((currentEntry = getNext(dirStream)) != NULL) {
-        // Check if we need to reallocate memory for entries
-        if (entryCount >= entryCapacity) {
-            entryCapacity *= 2; // Double the capacity
-            struct dirent *newEntries = realloc(entries, sizeof(struct dirent) * entryCapacity);
-            if (!newEntries) {
-                perror("Failed to reallocate memory for entries");
-                free(entries); // Free the old memory before exiting
-                exit(EXIT_FAILURE);
-            }
-            entries = newEntries; // Update the pointer only if realloc succeeds
-        }
-
-        // Store the current entry
-        entries[entryCount++] = *currentEntry;
-    }
-
-    // Sort the directory entries by name, with directories first
+    // Step3: Sort the entries
+    // Use qsort to sort the entries based on the custom comparator
     qsort(entries, entryCount, sizeof(struct dirent), dirent_compare);
 
-    // Iterate through each entry in the directory
+    // Step4: Process each entry
+    // Loop through each entry and perform the required actions
     for (int i = 0; i < entryCount; i++) {
-        size_t filePathSize = strlen(dn) + strlen(entries[i].d_name) + 2; // +2 for '/' and null terminator
-        char *filePath = malloc(filePathSize);
-        if (!filePath) {
-            perror("Failed to allocate memory for filePath");
-            free(entries);
-            closedir(dirStream);
-            exit(EXIT_FAILURE);
-        }
-        snprintf(filePath, filePathSize, "%s/%s", dn, entries[i].d_name); // Construct the full path for the entry
+      // Case1: Construct the full file path and updated prefix
+      char *filePath = constructFilePath(dn, entries[i].d_name);
+      char *updatedPstr = constructUpdatedPrefix(pstr, i == entryCount - 1, flags);
 
-        size_t updatedPstrSize = strlen(pstr) + 3; // +3 for "`-" or "|-" and null terminator
-        char *updatedPstr = malloc(updatedPstrSize);
-        if (!updatedPstr) {
-            perror("Failed to allocate memory for updatedPstr");
-            free(filePath);
-            free(entries);
-            closedir(dirStream);
-            exit(EXIT_FAILURE);
-        }
-        if (flags & F_TREE) {
-            snprintf(updatedPstr, updatedPstrSize, "%s%s", pstr, (i == entryCount - 1) ? "`-" : "|-");
-        } else {
-            snprintf(updatedPstr, updatedPstrSize, "%s  ", pstr);
-        }
+      // Case2: Update statistics if the F_SUMMARY flag is set
+      if (flags & F_SUMMARY) {
+        updateStatistics(&entries[i], filePath, stats);
+      }
 
-        // Update statistics if the F_SUMMARY flag is set
-        if (flags & F_SUMMARY) {
-            switch (entries[i].d_type) {
-                case DT_DIR: stats->dirs++; break; // Count directories
-                case DT_SOCK: stats->socks++; break; // Count sockets
-                case DT_FIFO: stats->fifos++; break; // Count pipes
-                case DT_LNK: stats->links++; break; // Count links
-                case DT_REG: stats->files++; break; // Count regular files
-            }
+      // Case3: Print detailed information if the F_VERBOSE flag is set
+      if (flags & F_VERBOSE) {
+        printVerboseInfo(&entries[i], filePath, updatedPstr);
+      } 
+      else {
+        // Print entry name if F_VERBOSE is not set
+        char cutName[128];
+        snprintf(cutName, sizeof(cutName), "%s", entries[i].d_name);
 
-            struct stat fileStat;
-            if (lstat(filePath, &fileStat) == 0) {
-                stats->size += fileStat.st_size;      // Update total size
-                stats->blocks += fileStat.st_blocks;  // Update total blocks
-            }
+        // Calculate maximum allowed length for the name based on prefix length
+        int maxLength = 54 - strlen(updatedPstr);
+
+        // Truncate long filenames and append "..." at the end
+        if (strlen(cutName) > maxLength) {
+            cutName[maxLength - 3] = '.';
+            cutName[maxLength - 2] = '.';
+            cutName[maxLength - 1] = '.';
+            cutName[maxLength] = '\0';
         }
 
-        // Print detailed information if the F_VERBOSE flag is set
-        if (flags & F_VERBOSE) {
-            char cutName[128];
-            snprintf(cutName, sizeof(cutName), "%s", entries[i].d_name);
+        printf("%s%s\n", updatedPstr, cutName);
+      }
 
-            // Calculate maximum allowed length for the name based on prefix length
-            int maxLength = 54 - strlen(updatedPstr);
-            // Truncate long filenames and append "..." at the end
-            if (strlen(cutName) > maxLength) {
-                cutName[maxLength - 3] = '.';
-                cutName[maxLength - 2] = '.';
-                cutName[maxLength - 1] = '.';
-                cutName[maxLength] = '\0';
-            }
-
-            printf("%s%-*.*s", updatedPstr, maxLength+2, maxLength+2, cutName); 
-
-            struct stat fileStat;
-            if (lstat(filePath, &fileStat) == 0) {
-                struct passwd *pwd = getpwuid(fileStat.st_uid); // Get user information
-                struct group *grp = getgrgid(fileStat.st_gid);  // Get group information
-                if (pwd && grp) {
-                    printf("%8.8s:%-8.8s  ", pwd->pw_name, grp->gr_name); // Print user and group names
-                } 
-                else {
-                    printf("????????:????????  "); // Print placeholder if user/group not found
-                }
-                printf("%*ld  %*ld  ", 10, fileStat.st_size, 8, fileStat.st_blocks); // Print size and blocks
-
-                // Print file type
-                switch (entries[i].d_type) {
-                    case DT_DIR: printf("d"); break; // Directory
-                    case DT_SOCK: printf("s"); break; // Socket
-                    case DT_FIFO: printf("f"); break; // Pipe
-                    case DT_LNK: printf("l"); break; // Link
-                    case DT_BLK: printf("b"); break; // Block device
-                    case DT_CHR: printf("c"); break; // Character device
-                    default: printf(" "); // Regular file or unknown type
-                }
-                printf("\n");
-            } 
-            else {
-                perror("lstat"); // Handle lstat errors
-            }
-        } 
-        else {
-            // Print entry name if F_VERBOSE is not set
-            char cutName[128];
-            snprintf(cutName, sizeof(cutName), "%s", entries[i].d_name);
-
-            // Calculate maximum allowed length for the name based on prefix length
-            int maxLength = 54 - strlen(updatedPstr);
-
-            // Truncate long filenames and append "..." at the end
-            if (strlen(cutName) > maxLength) {
-                cutName[maxLength - 3] = '.';
-                cutName[maxLength - 2] = '.';
-                cutName[maxLength - 1] = '.';
-                cutName[maxLength] = '\0';
-            }
-
-            printf("%s%s\n", updatedPstr, cutName);
-        }
-
-        // Recursively process subdirectories
-        if (entries[i].d_type == DT_DIR) {
-            size_t newPrefixSize = strlen(pstr) + 3; // +3 for "| " or "  " and null terminator
-            char *newPrefix = malloc(newPrefixSize);
-            if (!newPrefix) {
-                perror("Failed to allocate memory for newPrefix");
-                free(updatedPstr);
-                free(filePath);
-                free(entries);
-                closedir(dirStream);
-                exit(EXIT_FAILURE);
-            }
-            if (flags & F_TREE) {
-                snprintf(newPrefix, newPrefixSize, "%s%s", pstr, (i == entryCount - 1) ? "  " : "| ");
-            } else {
-                snprintf(newPrefix, newPrefixSize, "%s  ", pstr);
-            }
-            processDir(filePath, newPrefix, stats, flags); // Recursive call for subdirectory
-            free(newPrefix);
-        }
-
-        free(updatedPstr);
-        free(filePath);
-    }
-
-    free(entries); // Free allocated memory for entries
-    closedir(dirStream); // Close the directory stream
+      // Case4: Recursively process subdirectories
+      if (entries[i].d_type == DT_DIR) {
+          size_t newPrefixSize = strlen(pstr) + 3;
+          char *newPrefix = malloc(newPrefixSize);
+          if (!newPrefix) {
+              perror("Failed to allocate memory for newPrefix");
+              free(updatedPstr);
+              free(filePath);
+              free(entries);
+              closedir(dirStream);
+              exit(EXIT_FAILURE);
+          }
+          if (flags & F_TREE) {
+              snprintf(newPrefix, newPrefixSize, "%s%s", pstr, (i == entryCount - 1) ? "  " : "| ");
+          } 
+          else {
+              snprintf(newPrefix, newPrefixSize, "%s  ", pstr);
+          }
+          processDir(filePath, newPrefix, stats, flags);
+          free(newPrefix);
+      }
+      free(updatedPstr);
+      free(filePath);
+  }
+  free(entries);
+  closedir(dirStream);
 }
 
 

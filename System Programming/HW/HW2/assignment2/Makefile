@@ -17,7 +17,7 @@ DEP_DIR=.deps
 BIN_DIR=bin
 
 # C compiler and compilation flags
-CC=gcc800
+CC=gcc
 CFLAGS=-Wno-stringop-truncation -O2 -g
 CFLAGS_HDT=-Wno-stringop-truncation -O2
 DEPFLAGS=-MMD -MP -MT $@ -MF $(DEP_DIR)/$*.d
