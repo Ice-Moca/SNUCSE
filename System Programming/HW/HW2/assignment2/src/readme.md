@@ -45,7 +45,7 @@ This assignment helped me understand how to build scalable programs that can han
 ---
 
 ### Known Bugs or Limitations:
-- **Bug 1**: Initially, in `F_TREE` mode, the program used `"  "` or `"|-"`, `"`````-"` based on 
+- **Bug 1**: Initially, in `F_TREE` mode, the program used `"  "` or `"|-"`, `"``\```-"` based on 
     whether `-t` was specified. However, this caused difficulties when truncating 
     file names in `F_VERBOSE` mode. To resolve this, the `pstr` string was updated 
     to `updatedPstr` and passed down recursively to ensure consistent prefix handling.
