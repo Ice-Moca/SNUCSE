@@ -207,7 +207,7 @@ void updateStatistics(const struct dirent *entry, const char *filePath, struct s
     struct stat fileStat;
     if (lstat(filePath, &fileStat) == 0) {
         stats->size += fileStat.st_size;        // Update total size
-        stats->blocks += fileStat.st_blocks;   // Update total blocks
+        stats->blocks += fileStat.st_blocks;    // Update total blocks
     }
 }
 
@@ -260,6 +260,13 @@ void printVerboseInfo(const struct dirent *entry, const char *filePath, const ch
     }
 }
 
+
+/// @brief recursively process directory @a dn and print its tree
+///
+/// @param dn absolute or relative path string
+/// @param pstr prefix string printed in front of each entry
+/// @param stats pointer to statistics
+/// @param flags output control flags (F_*)
 void processDir(const char *dn, const char *pstr, struct summary *stats, unsigned int flags) {
     // Step1: Open the directory
     DIR *dirStream = openDirectory(dn, pstr, flags);
