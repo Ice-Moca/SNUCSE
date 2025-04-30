@@ -208,14 +208,14 @@ merge_chunks(Chunk_T c)
 void *
 heapmgr_malloc(size_t size)
 {
-    static int inited = FALSE;
+    static int initialized = FALSE;
     if (size == 0){
         return NULL;
     }
-    if (!inited) {
+    if (!initialized) {
         // Initialize the heap
         init_my_heap();
-        inited = TRUE;
+        initialized = TRUE;
     }
 
     assert(check_heap_validity());

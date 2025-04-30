@@ -1,0 +1,183 @@
+# readme
+
+## Name: 여은수  
+## Student ID: 2023-12753  
+## Assignment Number: 3
+
+---
+### CPU time and Heap memory consumption
+**Output**:
+       Executable          Test   Count   Size Time_m Time_f   Time        Mem
+==============================================================================
+ ./testheapmgrgnu    LIFO_fixed   50000   1000   0.02   0.00   0.02   50282496
+ ./testheapmgrgnu    FIFO_fixed   50000   1000   0.02   0.01   0.03       8192
+ ./testheapmgrgnu   LIFO_random   50000   1000   0.01   0.00   0.01   25681920
+ ./testheapmgrgnu   FIFO_random   50000   1000   0.01   0.00   0.02   25681920
+ ./testheapmgrgnu  random_fixed   50000   1000      -      -   0.01   10739712
+ ./testheapmgrgnu random_random   50000   1000      -      -   0.01    8110080
+ ./testheapmgrgnu         worst   50000   1000      -      -   0.01   13651968
+==============================================================================
+ ./testheapmgrgnu    LIFO_fixed   50000  10000   0.08   0.18   0.25          0
+ ./testheapmgrgnu    FIFO_fixed   50000  10000   0.08   0.03   0.11          0
+ ./testheapmgrgnu   LIFO_random   50000  10000   0.06   0.01   0.07  250667008
+ ./testheapmgrgnu   FIFO_random   50000  10000   0.06   0.02   0.08   48513024
+ ./testheapmgrgnu  random_fixed   50000  10000      -      -   0.05          0
+ ./testheapmgrgnu random_random   50000  10000      -      -   0.03   79257600
+ ./testheapmgrgnu         worst   50000  10000      -      -   0.05  126070784
+==============================================================================
+  ./testheapmgrkr    LIFO_fixed   50000   1000   0.02   0.00   0.02   51200000
+  ./testheapmgrkr    FIFO_fixed   50000   1000   0.02   0.00   0.02   51200000
+  ./testheapmgrkr   LIFO_random   50000   1000   0.05   0.03   0.08   26296320
+  ./testheapmgrkr   FIFO_random   50000   1000   0.05   0.01   0.06   26296320
+  ./testheapmgrkr  random_fixed   50000   1000      -      -   0.79   16171008
+  ./testheapmgrkr random_random   50000   1000      -      -   0.34    8273920
+  ./testheapmgrkr         worst   50000   1000      -      -   2.40   14139392
+==============================================================================
+  ./testheapmgrkr    LIFO_fixed   50000  10000 ./testheapimp: line 27: 3747972 Killed                  $executablefile LIFO_fixed 50000 10000
+  ./testheapmgrkr    FIFO_fixed   50000  10000 189.76   0.01 189.77  819200000
+  ./testheapmgrkr   LIFO_random   50000  10000  16.15  14.95  31.10  262881280
+  ./testheapmgrkr   FIFO_random   50000  10000  15.39   4.56  19.95  262881280
+  ./testheapmgrkr  random_fixed   50000  10000      -      -  11.88  184451072
+  ./testheapmgrkr random_random   50000  10000      -      -   4.38   82608128
+  ./testheapmgrkr         worst   50000  10000      -      -  32.05  172900352
+==============================================================================
+./testheapmgrbase    LIFO_fixed   50000   1000   0.02   0.00   0.02   51250000
+./testheapmgrbase    FIFO_fixed   50000   1000   0.02   0.00   0.02   51250000
+./testheapmgrbase   LIFO_random   50000   1000   0.01   0.00   0.02   26174400
+./testheapmgrbase   FIFO_random   50000   1000   0.01   0.00   0.02   26174400
+./testheapmgrbase  random_fixed   50000   1000      -      -   0.36   16186800
+./testheapmgrbase random_random   50000   1000      -      -   0.19    8282000
+./testheapmgrbase         worst   50000   1000      -      -   2.81   13956400
+==============================================================================
+./testheapmgrbase    LIFO_fixed   50000  10000 117.54 100.37 217.91  820000000
+./testheapmgrbase    FIFO_fixed   50000  10000 120.42   0.02 120.44  820000000
+./testheapmgrbase   LIFO_random   50000  10000  10.59   9.51  20.10  253494800
+./testheapmgrbase   FIFO_random   50000  10000  10.91   1.27  12.18  253494800
+./testheapmgrbase  random_fixed   50000  10000      -      -   8.53  184713200
+./testheapmgrbase random_random   50000  10000      -      -   2.74   80589600
+./testheapmgrbase         worst   50000  10000      -      -   5.86  172282000
+==============================================================================
+   ./testheapmgr1    LIFO_fixed   50000   1000   0.03   0.01   0.04   51600000
+   ./testheapmgr1    FIFO_fixed   50000   1000   0.04   0.01   0.05   51600000
+   ./testheapmgr1   LIFO_random   50000   1000   0.02   0.01   0.03   26760720
+   ./testheapmgr1   FIFO_random   50000   1000   0.02   0.00   0.03   26760720
+   ./testheapmgr1  random_fixed   50000   1000      -      -   0.02   16283928
+   ./testheapmgr1 random_random   50000   1000      -      -   0.01    8453024
+   ./testheapmgr1         worst   50000   1000      -      -   4.42   14400000
+==============================================================================
+   ./testheapmgr1    LIFO_fixed   50000  10000   0.10   0.01   0.11  501600000
+   ./testheapmgr1    FIFO_fixed   50000  10000   0.09   0.01   0.11  501600000
+   ./testheapmgr1   LIFO_random   50000  10000   0.08   0.01   0.09  251782720
+   ./testheapmgr1   FIFO_random   50000  10000   0.08   0.01   0.09  251782720
+   ./testheapmgr1  random_fixed   50000  10000      -      -   0.05  158294928
+   ./testheapmgr1 random_random   50000  10000      -      -   0.04   79880024
+   ./testheapmgr1         worst   50000  10000      -      -  13.10  126900000
+==============================================================================
+   ./testheapmgr2    LIFO_fixed   50000   1000   0.04   0.01   0.04   51600000
+   ./testheapmgr2    FIFO_fixed   50000   1000   0.04   0.00   0.04   51600000
+   ./testheapmgr2   LIFO_random   50000   1000   0.03   0.01   0.04   26760720
+   ./testheapmgr2   FIFO_random   50000   1000   0.03   0.00   0.03   26760720
+   ./testheapmgr2  random_fixed   50000   1000      -      -   0.02   16283928
+   ./testheapmgr2 random_random   50000   1000      -      -   0.02    8453024
+   ./testheapmgr2         worst   50000   1000      -      -   0.13   14400000
+==============================================================================
+   ./testheapmgr2    LIFO_fixed   50000  10000   0.10   0.01   0.11  501600000
+   ./testheapmgr2    FIFO_fixed   50000  10000   0.10   0.01   0.10  501600000
+   ./testheapmgr2   LIFO_random   50000  10000   0.08   0.01   0.09  251782720
+   ./testheapmgr2   FIFO_random   50000  10000   0.08   0.01   0.09  251782720
+   ./testheapmgr2  random_fixed   50000  10000      -      -   0.05  158294928
+   ./testheapmgr2 random_random   50000  10000      -      -   0.04   79880024
+   ./testheapmgr2         worst   50000  10000      -      -   1.80  126900000
+
+**Answer**:  
+- **heapmgr1**:  
+    Comparison between free() time  
+    Case 1: Count=50000 and Size=10000  
+                    LIFO_fixed          LIFO_random             FIFO_random  
+    heapmgrkr       killed              14.95                   4.56  
+    heapmgrbase     100.37              9.51                    1.27  
+    heapmgr1        0.01                0.01                    0.01  
+
+    Case 2: Count=50000 and Size=1000  
+                    LIFO_fixed          LIFO_random             FIFO_random  
+    heapmgrkr       0.00                0.03                    0.01  
+    heapmgrbase     0.00                0.00                    0.00  
+    heapmgr1        0.01                0.01                    0.00  
+
+    We can see that heapmgr1 maintains consistently minimal free() times, closely matching or outperforming the baseline and K&R implementations.
+
+    Comparison between running time  
+    Case 1: Count=50000 and Size=10000  
+                    random_fixed        random_random  
+    heapmgrkr       11.88               4.38  
+    heapmgrbase     8.53                2.74  
+    heapmgr1        0.05                0.04  
+
+    Case 2: Count=50000 and Size=1000  
+                    random_fixed        random_random  
+    heapmgrkr       0.79                0.34  
+    heapmgrbase     0.36                0.19  
+    heapmgr1        0.02                0.01  
+
+    We can see that heapmgr1 delivers significantly faster allocation/free cycles in randomized tests compared to both heapmgrkr and heapmgrbase.
+
+- **heapmgr2**:  
+    Consider when Count=50000 and Size=10000  
+                    LIFO_fixed          FIFO_fixed             LIFO_random             FIFO_random  
+    heapmgrkr       Killed              189.77                  31.10                   19.95  
+    heapmgrbase     217.91              120.44                  20.10                   12.18  
+    heapmgr1        0.11                0.11                    0.09                    0.09  
+    heapmgr2        0.11                0.10                    0.09                    0.09  
+
+                    random_fixed        random_random           worst  
+    heapmgrkr       11.88               4.38                    32.05  
+    heapmgrbase     8.53                2.74                    5.86  
+    heapmgr1        0.05                0.04                    13.10  
+    heapmgr2        0.05                0.04                    1.80  
+
+    We can see that heapmgr2 matches heapmgr1’s best-case performance and improves the worst-case running time 
+    compared to all other implementations.
+
+---
+### (Optionally) An indication of how much time you spent doing the assignment.
+**Answer**: I spent approximately 1 week on this assignment.
+
+---
+
+### (Optionally) Your assessment of the assignment.  
+**Answer**:  
+Implementing both `heapmgr1` and `heapmgr2` deepened my understanding of chunk metadata layout, splitting and merging strategies, 
+and the impact of data structures on performance. Comparing against the baseline and K&R implementations highlighted the trade-offs between
+implementation complexity and run-time/space efficiency. 
+The project reinforced key system-programming concepts—pointer arithmetic, boundary checks, and careful resource managing was highly instructive.  
+Additionally, through this assignment, I learned how to implement a non-circular doubly linked-list unlike the K&R malloc approach. 
+And also gained a clear understanding of the `sbrk` function’s role in dynamically extending the heap, and experienced the benefits of using a binning strategy to drastically reduce free-chunk search time and mitigate memory fragmentation.
+
+---
+
+### (Optionally) Any information that will help us to grade your work in the most favorable light. In particular you should describe all known bugs.
+  
+**Answer**: 
+**Additional Information**:  
+In the original `chunkbase.h` and `chunkbase.c`, `size` and `status` were stored as separate `int` fields in the struct. 
+However, I realized that combining them into a single field would shrink the chunk header size and improve efficiency. 
+Inspired by the 2024 midterm problem, I used the least significant bit to encode the status flag and implemented a unified 
+`size_status` field using bitwise operations.
+
+### Known Bugs or Limitations:
+- **Bug 1**:  In the coalescing logic I initially calculated the previous chunk address as  
+  ```c
+  prev = (Chunk_T)((char *)c - (prev_units + 2) * CHUNK_UNIT);
+  ```
+  because I misunderstood that the prev_units count did not include header and footer overhead. 
+  This led to incorrect pointer arithmetic and triggered assertion failures in check_heap_validity(). 
+  The correct calculation is
+  ```c
+  prev = (Chunk_T)((char *)c - prev_units * CHUNK_UNIT);
+  ```
+
+- **Bug 2**: 
+Although not a runtime failure, if the code is compiled without the -D NDEBUG flag, check_heap_validity() runs on every malloc() and free(). 
+This changes their complexity from O(1) (or O(n) in heapmgr2) to O(number_of_chunks), significantly impacting performance. 
+Compiling with -D NDEBUG disables these debug checks and restores the intended performance characteristics.
+
