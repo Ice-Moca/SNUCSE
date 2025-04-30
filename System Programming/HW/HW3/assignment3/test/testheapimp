@@ -1,0 +1,33 @@
+#!/bin/bash
+
+######################################################################
+# testheapimp tests a single heapmgr implementation.
+# To execute it, type testheapimp followed by the name of an existing
+# executable file that tests the heapmgr implementation.
+######################################################################
+
+# Validate the argument.
+if [ "$#" -ne "1" ]; then
+   echo "Usage: testheapimp [executablefile]"
+   exit 1
+fi
+
+# Capture the argument.
+executablefile=$1
+
+echo "=============================================================================="
+$executablefile LIFO_fixed 50000 1000
+$executablefile FIFO_fixed 50000 1000
+$executablefile LIFO_random 50000 1000
+$executablefile FIFO_random 50000 1000
+$executablefile random_fixed 50000 1000
+$executablefile random_random 50000 1000
+$executablefile worst 50000 1000
+echo "=============================================================================="
+$executablefile LIFO_fixed 50000 10000
+$executablefile FIFO_fixed 50000 10000
+$executablefile LIFO_random 50000 10000
+$executablefile FIFO_random 50000 10000
+$executablefile random_fixed 50000 10000
+$executablefile random_random 50000 10000
+$executablefile worst 50000 10000

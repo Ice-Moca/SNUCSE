@@ -1,0 +1,15 @@
+#!/bin/bash
+
+######################################################################
+# testheap2 tests five HeapMgr implementations.
+# Executable files named testheapmgrgnu, testheapmgrkr, testheapmgrbase,
+# testheapmgr1 and testheapmgr2 must exist before executing this script.
+# To execute the script, simply type ./testheap2.
+######################################################################
+
+echo "       Executable          Test   Count   Size Time_m Time_f   Time        Mem"
+./testheapimp ./testheapmgrgnu
+./testheapimp ./testheapmgrkr
+./testheapimp ./testheapmgrbase
+./testheapimp ./testheapmgr1
+./testheapimp ./testheapmgr2
