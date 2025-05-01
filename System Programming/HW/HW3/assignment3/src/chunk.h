@@ -10,7 +10,7 @@
 // used for size_t
 #include <stddef.h>    
 
-enum { CHUNK_UNIT = 8 };
+enum { CHUNK_UNIT = 16 };
 
 /*
 Each chunk has a size_status & 1 pointer.
