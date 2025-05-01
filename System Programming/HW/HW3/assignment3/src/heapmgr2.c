@@ -128,7 +128,7 @@ insert_chunk(Chunk_T c)
 
 /*--------------------------------------------------------------------*/
 /* remove_chunk:                                                      */
-/*   Remove a chunk from its bin free-list.  Fix up neighbor pointers.*/
+/*   Remove a chunk from its bin free-list.  Fix neighbor pointers.   */
 /*   Does not change chunk status.                                    */
 /*--------------------------------------------------------------------*/
 static void
@@ -169,22 +169,15 @@ merge_chunk(Chunk_T c)
 {
     /* Attempt to merge with previous chunk */
     // work same as the heapmgr1.c
-    if ((char *)c > (char *)g_heap_start) {
-        Chunk_T prev_footer = (Chunk_T)((char *)c - sizeof(struct Chunk));
-        // calculate the address of the previous chunk
-        // get the size of the previous chunk (Right shift)
-        size_t prev_units = prev_footer->size_status >> 1;
-        Chunk_T prev = (Chunk_T)((char *)c - prev_units * CHUNK_UNIT);
-        // check if status of the previous chunk is free
-        if (prev && chunk_get_status(prev) == CHUNK_FREE) {
-            remove_chunk(prev);
-            // combine the two chunks
-            // set the size of the previous chunk to 
-            // the sum of the two chunks (prev+c)
-            chunk_set_units(prev, chunk_get_units(prev) + chunk_get_units(c));
-            chunk_set_footer(prev);
-            c = prev;
-        }
+    Chunk_T prev = chunk_get_prev_adjacent(c, g_heap_start, g_heap_end);
+    if (prev && chunk_get_status(prev) == CHUNK_FREE) {
+        // remove the previous chunk from the free list
+        remove_chunk(prev);
+        // combine two chunks like the previous one
+        chunk_set_units(prev, chunk_get_units(prev) + chunk_get_units(c));
+        chunk_set_footer(prev);
+        // set the chunk to the previous chunk
+        c = prev;
     }
 
     /* Attempt to merge with next chunk */

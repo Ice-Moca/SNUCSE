@@ -97,6 +97,23 @@ Chunk_T chunk_get_next_adjacent(Chunk_T c, void *heap_start, void *heap_end) {
     return next;
 }
 
+Chunk_T chunk_get_prev_adjacent(Chunk_T c, void *heap_start, void *heap_end) {
+    assert(c);
+    if ((void*)c <= heap_start) {
+        return NULL;
+    }
+    // calculate the address of footer
+    Chunk_T footer = (Chunk_T)((char*)c - sizeof(*c));
+    // get the size of the chunk from footer by Left shift by 1
+    size_t prev_units = footer->size_status >> 1;
+    // calculate the address of previous chunk
+    Chunk_T prev = (Chunk_T)((char*)c - prev_units * CHUNK_UNIT);
+    if ((void*)prev < heap_start || (void*)prev >= heap_end) {
+        return NULL;
+    }
+    return prev;
+}
+
 /* Part4: Chunk validity check */
 
 int chunk_is_valid(Chunk_T c, void *heap_start, void *heap_end) {

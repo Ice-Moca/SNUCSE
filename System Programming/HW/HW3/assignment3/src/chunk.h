@@ -43,6 +43,7 @@ void    chunk_set_prev_free(Chunk_T c, Chunk_T prev);
 
 /* Adjacent chunk computation */
 Chunk_T chunk_get_next_adjacent(Chunk_T c, void *heap_start, void *heap_end);
+Chunk_T chunk_get_prev_adjacent(Chunk_T c, void *heap_start, void *heap_end);
 
 /* Chunk validity check */
 int chunk_is_valid(Chunk_T c, void *heap_start, void *heap_end);

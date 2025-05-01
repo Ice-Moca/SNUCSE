@@ -215,25 +215,14 @@ static Chunk_T
 merge_chunks(Chunk_T c)
 {
     /* Attempt to merge with previous chunk */
-    Chunk_T prev = NULL;
-    if ((char *)c > (char *)g_heap_start) {
-        // get the footer of the previous chunk
-        Chunk_T ftr = (Chunk_T)((char *)c - sizeof(struct Chunk));
-        // get the size of the previous chunk (Right shift)
-        size_t prev_units = ftr->size_status >> 1;
-        // calculate the address of the previous chunk
-        prev = (Chunk_T)((char *)c - prev_units * CHUNK_UNIT);
-        // check if status of the previous chunk is free
-        if (prev && chunk_get_status(prev) == CHUNK_FREE) {
-            remove_chunk(prev);
-            // combine the two chunks
-            // set the size of the previous chunk to 
-            // the sum of the two chunks (prev+c)
-            chunk_set_units(prev,chunk_get_units(prev) + chunk_get_units(c));
-            // set new footer
-            chunk_set_footer(prev);
-            c = prev;
-        }
+    Chunk_T prev = chunk_get_prev_adjacent(c, g_heap_start, g_heap_end);
+    // check if the previous chunk is in free list
+    if (prev && chunk_get_status(prev) == CHUNK_FREE) {
+        remove_chunk(prev);
+        // combine two chunks like the next one
+        chunk_set_units(prev, chunk_get_units(prev) + chunk_get_units(c));
+        chunk_set_footer(prev);
+        c = prev;
     }
 
     /* Attempt to merge with next chunk */
