@@ -28,18 +28,69 @@ static void *g_heap_start = NULL, *g_heap_end = NULL;
  * integrity of your code. 
  * Returns 1 on success or 0 (zero) on failure. 
  */
+/* Updated check_heap_validity for heapmgrbase.c with link checks */
 static int
 check_heap_validity(void)
 {
-    Chunk_T c;
-    // check if all free chunks are in the valid range & free list
-    for (c = g_free_head; c; c = chunk_get_next_free(c)) {
-        // check if the chunk is in the range of heap
-        if (!chunk_is_valid(c, g_heap_start, g_heap_end))
+    Chunk_T c, next_free, prev_free;
+
+    /* Case 1: Verify heap boundaries */
+    if (g_heap_start == NULL) {
+        fprintf(stderr, "Uninitialized heap start\n");
+        return FALSE;
+    }
+    if (g_heap_end == NULL) {
+        fprintf(stderr, "Uninitialized heap end\n");
+        return FALSE;
+    }
+
+    /* Case 2: If heap is empty, free list must be empty */
+    if (g_heap_start == g_heap_end) {
+        if (g_free_head == NULL) {
+            return TRUE;
+        }
+        fprintf(stderr, "Inconsistent empty heap\n");
+        return FALSE;
+    }
+
+    /* Case 3: Traverse entire heap region and validate each chunk */
+    for (c = (Chunk_T)g_heap_start;
+        c != NULL && (void *)c < g_heap_end;
+        c = chunk_get_next_adjacent(c, g_heap_start, g_heap_end)) {
+        if (!chunk_is_valid(c, g_heap_start, g_heap_end)) {
+            fprintf(stderr, "Invalid chunk\n");
             return FALSE;
-        // check if all free chunks are free list
-        if (chunk_get_status(c) != CHUNK_FREE)
+        }
+    }
+
+    /* Case 4: Check free-list about the status, linkage, and merging */
+    prev_free = NULL;
+    for (c = g_free_head; c != NULL; c = next_free) {
+        next_free = chunk_get_next_free(c);
+
+        /* a) Must be marked free and valid */
+        if (chunk_get_status(c) != CHUNK_FREE) {
+            fprintf(stderr, "Non-free chunk in free list\n");
             return FALSE;
+        }
+        if (!chunk_is_valid(c, g_heap_start, g_heap_end)) {
+            fprintf(stderr, "Invalid free chunk\n");
+            return FALSE;
+        }
+
+        /* b) prev_free pointer consistency */
+        if (chunk_get_prev_free(c) != prev_free) {
+            fprintf(stderr, "prev_free mismatch\n");
+            return FALSE;
+        }
+
+        /* c) No adjacent unmerged free chunks */
+        Chunk_T adj = chunk_get_next_adjacent(c, g_heap_start, g_heap_end);
+        if (adj != NULL && adj == next_free) {
+            fprintf(stderr, "Uncoalesced chunks\n");
+            return FALSE;
+        }
+        prev_free = c;
     }
     return TRUE;
 }
