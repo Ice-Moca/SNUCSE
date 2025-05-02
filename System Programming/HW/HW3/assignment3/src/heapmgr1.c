@@ -12,7 +12,7 @@
 #define FALSE 0
 #define TRUE  1
 
-enum { MEMALLOC_MIN = 4096 };
+enum { MEMALLOC_MIN = 1024 };
 
 /* g_free_head: point to first chunk in the free list */
 static Chunk_T g_free_head = NULL;

@@ -14,8 +14,8 @@
 
 // Configuration constants
 enum {
-    MEMALLOC_MIN = 4096,
-    NUM_BINS     = 100,     
+    MEMALLOC_MIN = 1024,
+    NUM_BINS     = 128,     
     BIN_UNIT     = 64       
 };
 
