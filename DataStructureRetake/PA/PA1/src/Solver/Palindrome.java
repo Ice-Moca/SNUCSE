@@ -51,10 +51,10 @@ public class Palindrome {
             }
         }
     
-        // If not a palindrome, set length to maxLen
-        if (!isPalindrome) {
+        // If input length is larger than maxlen, set length to maxLen
+        if (this.length > this.maxLen) {
             this.length = this.maxLen;
-        }
+        }   
         this.queue.clear();
         this.stack.clear();
     
