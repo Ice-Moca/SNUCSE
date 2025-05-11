@@ -1,0 +1,6 @@
+print_all
+balance_check
+get unknown_book
+remove unknown_book
+prefix_search abc
+location_search Z1

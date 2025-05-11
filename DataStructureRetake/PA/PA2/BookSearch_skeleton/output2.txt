@@ -1,0 +1,23 @@
+ADD:	a_book C1-100
+ADD:	b_book B2-200
+ADD:	c_book C1-150
+SIZE:	3
+BOOK:	a_book
+BOOK:	b_book
+BOOK:	c_book
+PRINT_TREE:	
+   ab3       
+    \   
+     \  
+     bb2   
+      \ 
+      cb1 
+                
+GET:	b_book B2-200
+REMOVE:	a_book C1-100
+PRINT_TREE:	
+ bb2   
+  \ 
+  cb1 
+        
+BookSearch is valid

@@ -1,0 +1,10 @@
+add a_book C1-100
+add b_book B2-200
+add c_book C1-150
+size
+print_all
+print_tree
+get b_book
+remove a_book
+print_tree
+validation_check

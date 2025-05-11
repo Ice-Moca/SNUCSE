@@ -1,0 +1,21 @@
+ADD:	alpha C1-001
+ADD:	beta 
+ADD:	gamma C1-003
+ADD:	delta D1-004
+PREFIX:	g
+BOOK:	gamma
+ORDER:	beta
+ORDER:	3
+The tree needs to be rebalanced.
+LOCATION:	C1
+BOOK:	alpha C1-001
+BOOK:	gamma C1-003
+REMOVE:	gamma C1-003
+PRINT_TREE:	
+   a3       
+    \   
+     \  
+     b2   
+      \ 
+      d1 
+                

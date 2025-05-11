@@ -1,0 +1,44 @@
+print_all
+balance_check
+prefix_search wolverine
+location_search C1
+get history
+add gazza_ssanai A4-123
+prefix_search wolverine
+validation_check
+add purity_dancer C2-112
+add happy_solo B5-331
+add uncle_chan C1-100
+print_tree
+balance_check
+add uncle_john C1-101
+print_tree
+add fancy_programmer C1-107
+add cazza_asanai A4-123
+balance_check
+validation_check
+remove history
+size
+print_all
+add wolverine_vs_superman H1-1
+add wolverine_vs_batman H1-2
+add wolverine_vs_saperman H1-1
+add wolverine_vs_ironman H1-3
+add wolverine_vs_hulk H1-4
+add wolverine_vs_spider_man H1-5
+order_search uncle_chan
+order_search 5
+order_search the_dungeon_and_dragon
+remove how_to_make_a_girl_friend
+remove fancy_programmer
+get uncle_chan
+validation_check
+prefix_search wolverine
+prefix_search un
+prefix_search z
+balance_check
+location_search C1
+location_search C2
+location_search H1
+location_search Z9
+

@@ -1,0 +1,8 @@
+BookSearch does not have any book
+The tree is balanced
+BookSearch cannot find the book
+BookSearch cannot find the book
+PREFIX:	abc
+BookSearch cannot find any book starting with "abc"
+LOCATION:	Z1
+BookSearch cannot find any book in section Z1

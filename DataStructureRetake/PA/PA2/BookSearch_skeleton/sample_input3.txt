@@ -1,0 +1,11 @@
+add alpha C1-001
+add beta  C2-002
+add gamma C1-003
+add delta D1-004
+prefix_search g
+order_search 2
+order_search delta
+balance_check
+location_search C1
+remove gamma
+print_tree

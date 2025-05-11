@@ -1,0 +1,90 @@
+BookSearch does not have any book
+The tree is balanced
+PREFIX:	wolverine
+BookSearch cannot find any book starting with "wolverine"
+LOCATION:	C1
+BookSearch cannot find any book in section C1
+BookSearch cannot find the book
+ADD:	gazza_ssanai A4-123
+PREFIX:	wolverine
+BookSearch cannot find any book starting with "wolverine"
+BookSearch is valid
+ADD:	purity_dancer C2-112
+ADD:	happy_solo B5-331
+ADD:	uncle_chan C1-100
+PRINT_TREE:	
+   gs4       
+    \   
+     \  
+     pd3   
+    / \ 
+    hs1 uc1 
+                
+The tree needs to be rebalanced.
+ADD:	uncle_john C1-101
+PRINT_TREE:	
+       gs5               
+        \       
+         \      
+          \     
+           \    
+           pd4       
+          / \   
+         /   \  
+         hs1   uc2   
+              \ 
+              uj1 
+                                
+ADD:	fancy_programmer C1-107
+ADD:	cazza_asanai A4-123
+The tree is balanced
+BookSearch is valid
+BookSearch cannot find the book
+SIZE:	7
+BOOK:	cazza_asanai
+BOOK:	fancy_programmer
+BOOK:	gazza_ssanai
+BOOK:	happy_solo
+BOOK:	purity_dancer
+BOOK:	uncle_chan
+BOOK:	uncle_john
+ADD:	wolverine_vs_superman H1-1
+ADD:	wolverine_vs_batman H1-2
+ADD:	wolverine_vs_saperman H1-1
+ADD:	wolverine_vs_ironman H1-3
+ADD:	wolverine_vs_hulk H1-4
+ADD:	wolverine_vs_spider_man H1-5
+ORDER:	6
+ORDER:	purity_dancer
+BookSearch cannot find the book
+BookSearch cannot find the book
+REMOVE:	fancy_programmer C1-107
+GET:	uncle_chan C1-100
+BookSearch is valid
+PREFIX:	wolverine
+BOOK:	wolverine_vs_batman
+BOOK:	wolverine_vs_hulk
+BOOK:	wolverine_vs_ironman
+BOOK:	wolverine_vs_saperman
+BOOK:	wolverine_vs_spider_man
+BOOK:	wolverine_vs_superman
+PREFIX:	un
+BOOK:	uncle_chan
+BOOK:	uncle_john
+PREFIX:	z
+BookSearch cannot find any book starting with "z"
+The tree needs to be rebalanced.
+LOCATION:	C1
+BOOK:	uncle_chan C1-100
+BOOK:	uncle_john C1-101
+LOCATION:	C2
+BOOK:	purity_dancer C2-112
+LOCATION:	H1
+BOOK:	wolverine_vs_batman H1-2
+BOOK:	wolverine_vs_hulk H1-4
+BOOK:	wolverine_vs_ironman H1-3
+BOOK:	wolverine_vs_saperman H1-1
+BOOK:	wolverine_vs_spider_man H1-5
+BOOK:	wolverine_vs_superman H1-1
+LOCATION:	Z9
+BookSearch cannot find any book in section Z9
