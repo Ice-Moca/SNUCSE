@@ -1,0 +1,6 @@
+Sort by keys: [book : 6] [data : 4] [hello : 5] [structure : 1] 
+Median: data-hello 4-5
+Sort by values: [structure : 1] [data : 4] [hello : 5] [book : 6] 
+Median: data-hello 4-5
+Sort by sortrev values: [book : 6] [hello : 5] [data : 4] [structure : 1] 
+Median: data-hello 4-5

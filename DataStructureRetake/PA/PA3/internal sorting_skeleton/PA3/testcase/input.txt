@@ -1,0 +1,14 @@
+n 4
+append hello 5
+append data 4
+append structure 1
+append book 6
+sort keys
+print
+median
+sort values
+print
+median
+sortrev values
+print
+median
