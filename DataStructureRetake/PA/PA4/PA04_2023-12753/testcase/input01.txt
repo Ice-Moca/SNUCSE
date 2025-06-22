@@ -1,0 +1,10 @@
+create 1 0 0
+insert 10
+insert 137
+insert 254
+search 10
+search 137
+search 255
+delete 10
+search 137
+quit
